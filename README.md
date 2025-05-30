@@ -5,4 +5,3 @@ To run the application, please clone the repository and run
 
 or alternatively, you make write
 
-`npm build` to build an executable
