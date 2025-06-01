@@ -10,7 +10,7 @@
     "make": "electron-forge make"
   },
   "keywords": [],
-  "author": "",
+  "author": "Utsav Shankar, Celeste Phua",
   "license": "ISC",
   "type": "commonjs",
   "devDependencies": {
