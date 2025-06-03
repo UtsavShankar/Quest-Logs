@@ -1,6 +1,7 @@
-const { initializeApp } = require('firebase/app');
-const { getAuth } = require('firebase/auth');
-const { getFirestore } = require('firebase/firestore');
+// firebase.js
+import { initializeApp } from 'https://www.gstatic.com/firebasejs/11.8.0/firebase-app.js';
+import { getAuth } from 'https://www.gstatic.com/firebasejs/11.8.0/firebase-auth.js';
+import { getFirestore } from 'https://www.gstatic.com/firebasejs/11.8.0/firebase-firestore.js';
 
 const firebaseConfig = {
   apiKey: "AIzaSyDVWeHOPZmiafX-rSF0IidTTS8gF3HNfqM",
@@ -13,7 +14,5 @@ const firebaseConfig = {
 
 const app = initializeApp(firebaseConfig);
 
-module.exports = {
-  auth: getAuth(app),
-  db: getFirestore(app)
-};
+export const auth = getAuth(app);
+export const db = getFirestore(app);
