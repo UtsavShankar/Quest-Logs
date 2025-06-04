@@ -1,18 +1,26 @@
-const { app, BrowserWindow } = require('electron');
-const path = require('path');
+import { app, BrowserWindow } from 'electron';
+import { join, dirname } from 'path';
+import { fileURLToPath } from 'url';
+const isDev = !app.isPackaged;
+const __filename = fileURLToPath(import.meta.url);
+const __dirname = dirname(__filename);
 
 function createWindow() {
   const win = new BrowserWindow({
     width: 800,
     height: 600,
     webPreferences: {
-      preload: path.join(__dirname, 'src/renderer.js'),
+      preload: join(__dirname, 'src/renderer.js'),
       contextIsolation: false,
       nodeIntegration: true
     }
   });
 
-  win.loadFile(path.join(__dirname, 'src/index.html'));
+  win.loadURL(
+    isDev
+    ? 'http://localhost:3000'
+    : `file://${join(__dirname, 'public/index.html')}`
+  );
 }
 
 app.whenReady().then(createWindow);
