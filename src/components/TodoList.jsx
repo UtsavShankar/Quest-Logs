@@ -16,12 +16,26 @@ import { signOut } from "firebase/auth";
 export default function TodoList({ user }) {
   const [todos, setTodos] = useState([]);
   const [newTask, setNewTask] = useState("");
+  const [deadline, setDeadline] = useState(null);
+  const [isAddingDate, setIsAddingDate] = useState(false);
 
   const loadTodos = useCallback(async () => {
     if (!user) return;
-    console.log("loading todos");
     const q = query(collection(db, "todos"), where("userId", "==", user.uid));
     const snapshot = await getDocs(q);
+    for (const docSnap of snapshot.docs) {
+      const data = docSnap.data();
+
+      if (typeof data.title === "object" && data.title !== null && "title" in data.title) {
+        const newTitle = data.title.title;
+        await updateDoc(doc(db, "todos", docSnap.id), { title: newTitle });
+      }
+    }
+    snapshot.forEach((doc) => {
+      const data = doc.data();
+      console.log("Title:", data.title);
+      console.log("Deadline:", data.deadline);
+    });
     const items = snapshot.docs.map((docSnap) => ({
       id: docSnap.id,
       ...docSnap.data()
@@ -30,7 +44,6 @@ export default function TodoList({ user }) {
   }, [user]);
 
   useEffect(() => {
-    console.log("use effect");
     loadTodos();
   }, [loadTodos]);
 
@@ -40,14 +53,20 @@ export default function TodoList({ user }) {
       title: newTask,
       completed: false,
       userId: user.uid,
-      createdAt: Date.now()
+      createdAt: Date.now(),
+      deadline: deadline
     });
     setNewTask("");
+    setDeadline(null);
+    setIsAddingDate(false);
     loadTodos();
   };
 
-  const updateTodo = async (id, newTitle) => {
-    await updateDoc(doc(db, "todos", id), { title: newTitle });
+  const updateTodo = async (id, newTitle, newDeadline) => {
+    await updateDoc(doc(db, "todos", id), { 
+      title: newTitle,
+      deadline: newDeadline,
+    });
     loadTodos();
   };
 
@@ -71,6 +90,11 @@ export default function TodoList({ user }) {
         ))}
       </ul>
       <input value={newTask} placeholder="Enter new quest" onChange={(e) => setNewTask(e.target.value)} />
+      {
+        !isAddingDate
+        ? <button onClick={() => setIsAddingDate(true)}>Add Date</button>
+        : <input type="date" value={deadline || ""} onChange={(e) => setDeadline(e.target.value)}/>
+      }
       <button onClick={addTodo}>Add Quest</button>
     </div>
   );
