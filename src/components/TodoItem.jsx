@@ -1,8 +1,19 @@
 import React, { useState } from "react";
+import { useSortable } from "@dnd-kit/sortable";
+import { CSS } from "@dnd-kit/utilities";
 
 export default function TodoItem({ todo, onUpdate, onDelete }) {
   const [isEditing, setIsEditing] = useState(false);
   const [editVal, setEditVal] = useState(todo.title);
+  const {attributes, listeners, setNodeRef, transform, transition} = useSortable({
+    id: todo.id,
+  });
+  
+  const style = {
+    transform: CSS.Transform.toString(transform),
+    transition,
+    padding: '3px'
+  };
   const [editDeadline, setEditDeadline] = useState(todo.deadline ?? "");
   const [isAddingDate, setIsAddingDate] = useState(false);
 
@@ -55,6 +66,7 @@ export default function TodoItem({ todo, onUpdate, onDelete }) {
           </div>
         </div>
       )}
+      </div>
     </li>
   );
 }
