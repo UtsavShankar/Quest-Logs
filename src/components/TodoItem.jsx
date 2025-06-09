@@ -32,7 +32,7 @@ export default function TodoItem({ todo, onUpdate, onDelete }) {
   };
 
   return (
-    <li>
+    <li ref={setNodeRef} style={style} {...attributes}>
       {isEditing ? (
         <div style={{ display: 'grid', gridTemplateColumns: "1fr 140px auto auto", gap: '8px', alignItems: 'center'}}>
           <input value={editVal} onChange={(e) => setEditVal(e.target.value)} />
@@ -50,6 +50,7 @@ export default function TodoItem({ todo, onUpdate, onDelete }) {
         </div>
       ) : (
         <div style={{ display: 'grid', gridTemplateColumns: "1fr 140px auto auto", gap: '8px', alignItems: 'center'}}>
+          <div style={{ display: 'contents', cursor: 'default' }} {...listeners}>
           <span>{todo.title}</span>
           <span>{todo.deadline
             ? new Date(todo.deadline).toLocaleDateString("en-US", {
@@ -60,13 +61,13 @@ export default function TodoItem({ todo, onUpdate, onDelete }) {
             : ""
           }</span>
           <span>{daysRemaining}</span>
+          </div>
           <div>
-            <button onClick={() => setIsEditing(true)}>Edit</button>
+            <button onClick={() => {setIsEditing(true); console.log("editing")}}>Edit</button>
             <button onClick={() => onDelete(todo.id)}>Delete</button>
           </div>
         </div>
       )}
-      </div>
     </li>
   );
 }

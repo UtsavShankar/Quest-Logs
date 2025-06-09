@@ -15,6 +15,7 @@ import {
 import { DndContext, PointerSensor, useSensor, useSensors} from "@dnd-kit/core";
 import { SortableContext, arrayMove } from "@dnd-kit/sortable";
 import TodoItem from "./TodoItem";
+import { restrictToVerticalAxis } from "@dnd-kit/modifiers";
 
 export default function TodoList({ user }) {
   const [todos, setTodos] = useState([]);
@@ -114,7 +115,7 @@ export default function TodoList({ user }) {
       <h2>Quest Log</h2>
       <button onClick={handleLogout} style={{marginBottom: '10px'}}>Logout</button>
       <br />
-      <DndContext onDragEnd={handleDragEnd} sensors={sensors}>
+      <DndContext onDragEnd={handleDragEnd} sensors={sensors} modifiers={[restrictToVerticalAxis]}>
         <SortableContext items={todos}>
           <ul>
             {todos.map((todo) => (
