@@ -23,8 +23,10 @@ export default function TodoList({ user }) {
   const sensors = useSensors(
     useSensor(PointerSensor)
   );
-  const [deadline, setDeadline] = useState(null);
+  const [isAddingTag, setIsAddingTag] = useState(false);
+  const [tag, setTag] = useState("");
   const [isAddingDate, setIsAddingDate] = useState(false);
+  const [deadline, setDeadline] = useState(null);
 
   const loadTodos = useCallback(async () => {
     if (!user) return;
@@ -67,10 +69,13 @@ export default function TodoList({ user }) {
       userId: user.uid,
       createdAt: Date.now(),
       sortOrder: todos.length,
-      deadline: deadline
+      deadline: deadline,
+      tags: [tag]
     });
     setNewTask("");
+    setTag("");
     setDeadline(null);
+    setIsAddingTag(false);
     setIsAddingDate(false);
     loadTodos();
   };
@@ -112,8 +117,8 @@ export default function TodoList({ user }) {
 
   return (
     <div>
-      <h2>Quest Log</h2>
       <button onClick={handleLogout} style={{marginBottom: '10px'}}>Logout</button>
+      <h1 style={{textAlign: 'center'}}>Quest Log</h1>
       <br />
       <DndContext onDragEnd={handleDragEnd} sensors={sensors} modifiers={[restrictToVerticalAxis]}>
         <SortableContext items={todos}>
@@ -126,8 +131,13 @@ export default function TodoList({ user }) {
       </DndContext>
       <input value={newTask} placeholder="Enter new quest" onChange={(e) => setNewTask(e.target.value)} />
       {
+        !isAddingTag
+        ? <button onClick={() => setIsAddingTag(true)}>Add Tag</button>
+        : <input onChange={(e) => setTag(e.target.value)} placeholder="Tag"/>
+      }
+      {
         !isAddingDate
-        ? <button onClick={() => setIsAddingDate(true)}>Add Date</button>
+        ? <button value={tag || ""} onClick={() => setIsAddingDate(true)}>Add Date</button>
         : <input type="date" value={deadline || ""} onChange={(e) => setDeadline(e.target.value)}/>
       }
       <button onClick={addTodo}>Add Quest</button>

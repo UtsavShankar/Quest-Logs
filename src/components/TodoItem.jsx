@@ -14,6 +14,8 @@ export default function TodoItem({ todo, onUpdate, onDelete }) {
     transition,
     padding: '3px'
   };
+  const [editTag, setEditTag] = useState(todo.tags ? todo.tags[0] : "");
+  const [isAddingTag, setIsAddingTag] = useState(false);
   const [editDeadline, setEditDeadline] = useState(todo.deadline ?? "");
   const [isAddingDate, setIsAddingDate] = useState(false);
 
@@ -29,13 +31,19 @@ export default function TodoItem({ todo, onUpdate, onDelete }) {
   const save = () => {
     onUpdate(todo.id, editVal, editDeadline);
     setIsEditing(false);
+    setIsAddingTag(false);
   };
 
   return (
     <li ref={setNodeRef} style={style} {...attributes}>
       {isEditing ? (
-        <div style={{ display: 'grid', gridTemplateColumns: "1fr 140px auto auto", gap: '8px', alignItems: 'center'}}>
-          <input value={editVal} onChange={(e) => setEditVal(e.target.value)} />
+        <div style={{ display: 'grid', gridTemplateColumns: "1fr 100px 110px 150px auto", gap: '8px', alignItems: 'center'}}>
+          <input value={editVal} onChange={(e) => setEditVal(e.target.value)}/>
+          {
+            (todo.tags && todo.tags[0] !== "") || isAddingTag
+            ? <input value={editTag} onChange={(e) => setEditTag(e.target.value)}/>
+            : <button onClick={() => setIsAddingTag(true)}>Add Tag</button>
+          }
           {
             todo.deadline
             ? <input type="date" value={editDeadline} onChange={(e) => setEditDeadline(e.target.value)}/>
@@ -43,15 +51,17 @@ export default function TodoItem({ todo, onUpdate, onDelete }) {
               ? <button onClick={() => setIsAddingDate(true)}>Add Date</button>
               : <input type="date" value={editDeadline || ""} onChange={(e) => setEditDeadline(e.target.value)}/>
           }
+          <div/>
           <div>
             <button onClick={save}>Save</button>
             <button onClick={() => setIsEditing(false)}>Cancel</button>
           </div>
         </div>
       ) : (
-        <div style={{ display: 'grid', gridTemplateColumns: "1fr 140px auto auto", gap: '8px', alignItems: 'center'}}>
+        <div style={{ display: 'grid', gridTemplateColumns: "1fr 100px 110px 150px auto", gap: '8px', alignItems: 'left'}}>
           <div style={{ display: 'contents', cursor: 'default' }} {...listeners}>
           <span>{todo.title}</span>
+          <span>{todo.tags ? todo.tags[0] : ""}</span>
           <span>{todo.deadline
             ? new Date(todo.deadline).toLocaleDateString("en-US", {
               year: "numeric",

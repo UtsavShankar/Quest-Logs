@@ -15,7 +15,7 @@ function App() {
   }, []);
 
   return (
-    <div style={{ fontFamily: 'sans-serif', padding: '20px' }}>
+    <div style={{ padding: '20px' }}>
       {!user ? (
         <AuthForm />
       ) : (
