@@ -1,8 +1,9 @@
 import React, { useState } from "react";
 import { useSortable } from "@dnd-kit/sortable";
 import { CSS } from "@dnd-kit/utilities";
+import TagPicker from "./Tags";
 
-export default function TodoItem({ todo, onUpdate, onDelete }) {
+export default function TodoItem({ todo, onUpdate, onDelete, userTags }) {
   const [isEditing, setIsEditing] = useState(false);
   const [editVal, setEditVal] = useState(todo.title);
   const {attributes, listeners, setNodeRef, transform, transition} = useSortable({
@@ -29,7 +30,7 @@ export default function TodoItem({ todo, onUpdate, onDelete }) {
   })();
 
   const save = () => {
-    onUpdate(todo.id, editVal, editDeadline);
+    onUpdate(todo.id, editVal, editTag, editDeadline);
     setIsEditing(false);
     setIsAddingTag(false);
   };
@@ -37,11 +38,11 @@ export default function TodoItem({ todo, onUpdate, onDelete }) {
   return (
     <li ref={setNodeRef} style={style} {...attributes}>
       {isEditing ? (
-        <div style={{ display: 'grid', gridTemplateColumns: "1fr 100px 110px 150px auto", gap: '8px', alignItems: 'center'}}>
+        <div style={{ position: 'relative', display: 'grid', gridTemplateColumns: "1fr 100px 110px 150px auto", gap: '8px', alignItems: 'center'}}>
           <input value={editVal} onChange={(e) => setEditVal(e.target.value)}/>
           {
             (todo.tags && todo.tags[0] !== "") || isAddingTag
-            ? <input value={editTag} onChange={(e) => setEditTag(e.target.value)}/>
+            ? <TagPicker todo={todo} userTags={userTags}/>
             : <button onClick={() => setIsAddingTag(true)}>Add Tag</button>
           }
           {

@@ -80,9 +80,10 @@ export default function TodoList({ user }) {
     loadTodos();
   };
 
-  const updateTodo = async (id, newTitle, newDeadline) => {
+  const updateTodo = async (id, newTitle, newTag, newDeadline) => {
     await updateDoc(doc(db, "todos", id), { 
       title: newTitle,
+      tags: [newTag],
       deadline: newDeadline,
     });
     loadTodos();

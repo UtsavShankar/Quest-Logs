@@ -26,6 +26,39 @@ input[type="date"]::-webkit-calendar-picker-indicator {
   filter: invert(1);
 }
 
+.tag-picker {
+  position: absolute;
+  top: 0;
+  background-color: black;
+  border: 0.5px solid gray;
+  box-sizing: border-box;
+  width: 200px;
+  height: 150px;
+  z-index: 1;
+  display: flex;
+  flex-direction: column;
+  flex-shrink: 0;
+}
+
+.tag-search-bar {
+  width: 100%;
+  box-sizing: border-box;
+  height: 25px;
+  background-color: #262626;
+  border: none;
+  padding: 0.5rem;
+}
+
+.tag-list {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  overflow-y: scroll;
+  scrollbar-width: none;
+  padding: 0.5rem;
+}
+
 code {
   font-family: source-code-pro, Menlo, Monaco, Consolas, 'Courier New',
     monospace;
