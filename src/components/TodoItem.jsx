@@ -3,7 +3,7 @@ import { useSortable } from "@dnd-kit/sortable";
 import { CSS } from "@dnd-kit/utilities";
 import TagPicker from "./Tags";
 
-export default function TodoItem({ todo, onUpdate, onDelete, userTags }) {
+export default function TodoItem({ todo, onUpdate, onDelete }) {
   const [isEditing, setIsEditing] = useState(false);
   const [editVal, setEditVal] = useState(todo.title);
   const {attributes, listeners, setNodeRef, transform, transition} = useSortable({
@@ -38,6 +38,7 @@ export default function TodoItem({ todo, onUpdate, onDelete, userTags }) {
   const cancel = () => {
     setIsEditing(false);
     setIsEditingTag(false);
+    setEditTag(todo.tags && todo.tags[0] ? todo.tags[0] : null);
   }
 
   return (
@@ -48,8 +49,8 @@ export default function TodoItem({ todo, onUpdate, onDelete, userTags }) {
           {
             isEditingTag
             ? <TagPicker 
-                todo={todo} 
-                userTags={userTags} 
+                userId={todo.userId} 
+                editTag={editTag}
                 onUpdate={newTag => setEditTag(newTag)} 
                 endEdit={() => setIsEditingTag(false)}
               />

@@ -1,4 +1,4 @@
-import { useEffect, useState, useCallback } from "react";
+import { useEffect, useState, useCallback, useRef } from "react";
 import { db } from "../firebase.js";
 import {
   collection,
@@ -9,23 +9,24 @@ import {
 } from "https://www.gstatic.com/firebasejs/11.8.0/firebase-firestore.js";
 import TagItem from "./TagItem";
 
-export default function TagPicker({ todo, onUpdate, endEdit }) {
+export default function TagPicker({ userId, editTag, onUpdate, endEdit }) {
     const [userTags, setUserTags] = useState([]);
     const [searchTerm, setSearchTerm] = useState("");
     const [searchResults, setSearchResults] = useState(userTags);
-    const [editTag, setEditTag] = useState(todo.tags ? todo.tags[0] : null);
+
+    const pickerRef = useRef();
 
     const loadUserTags = useCallback(async () => {
         const q = query(
             collection(db, "tags"), 
-            where("userId", "==", todo.userId)
+            where("userId", "==", userId)
         );
         const snapshot = await getDocs(q);
         const items = snapshot.docs.map(doc => ({ 
             id: doc.id, ...doc.data() 
         }));
         setUserTags(items);
-    }, [todo.userId, setUserTags]);
+    }, [userId, setUserTags]);
 
     useEffect(() => {
         loadUserTags();
@@ -45,21 +46,20 @@ export default function TagPicker({ todo, onUpdate, endEdit }) {
     const addTag = async (tagName) => {
         const q = query(
             collection(db, "tags"), 
-            where("userId", "==", todo.userId), 
+            where("userId", "==", userId), 
             where("name", "==", tagName));
         const snapshot = await getDocs(q);
 
         const newTag = {
                 id: userTags.length,
                 name: tagName,
-                userId: todo.userId
+                userId: userId
             }
         
         if (snapshot.empty) {
             await addDoc(collection(db, "tags"), newTag);
         }
         changeTag(newTag);
-        endEdit();
         loadUserTags();
     }
 
@@ -68,16 +68,40 @@ export default function TagPicker({ todo, onUpdate, endEdit }) {
     }
 
     const changeTag = newTag => {
-        setEditTag(newTag);
         onUpdate(newTag);
         endEdit();
     }
 
+    const removeTag = () => {
+        onUpdate(null);
+    }
+
+    useEffect(() => {
+        const handler = (event) => {
+            if (pickerRef.current && !pickerRef.current.contains(event.target)) {
+                endEdit();
+            }
+        }
+        
+        const timeout = setTimeout(() => {
+            document.addEventListener("click", handler);
+        }, 0);
+
+        return () => {
+            clearTimeout(timeout);
+            document.removeEventListener("click", handler);
+        }
+    }, [endEdit]);
+
     return (
-        <span>
+        <span ref={pickerRef}>
             <div className="tag-picker">
                 <div className="tag-search-bar">
-                    {(todo.tags && todo.tags[0]) ? <span className="tag">{editTag.name}</span> : <></>}
+                    {editTag && <div className="tag" style={{display: 'flex', paddingRight: 0}}>
+                        <span>{editTag.name}</span>
+                        <button style={{border: 'none', padding: '0.1rem 0.5rem 0.1rem', fontSize: '1.3rem', background: 'none',
+                            lineHeight: 1, display: 'flex', position: 'relative', top: '-1px'}} onClick={removeTag}>&times;</button>
+                    </div>}
                     <input className="tag-search-input" value={searchTerm} 
                         placeholder="Search..." autoFocus="autofocus" onChange={handleSearchChange}/>
                 </div>
