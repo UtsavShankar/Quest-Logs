@@ -104,7 +104,7 @@ export default function TodoList({ user }) {
   };
 
   return (
-    <div>
+    <div style={{ padding: '20px' }}>
       <button onClick={handleLogout} style={{marginBottom: '10px'}}>Logout</button>
       <h1 style={{textAlign: 'center'}}>Quest Log</h1>
       <br />

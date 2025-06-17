@@ -25,12 +25,12 @@ export default function AuthForm() {
   };
 
   return (
-    <div>
+    <div style={{ position: 'absolute', height: '100%', width: '100%', display:'flex', 
+    flexDirection: 'column', alignItems: 'center', justifyContent: 'center', gap: '10px'}}>
       <h2>Login / Register</h2>
       <input placeholder="Email" value={email} onChange={(e) => setEmail(e.target.value)} />
-      <br />
       <input placeholder="Password" type="password" value={password} onChange={(e) => setPassword(e.target.value)} />
-      <div>
+      <div style={{display: 'flex', gap: '10px'}}>
         <button onClick={handleLogin}>Login</button>
         <button onClick={handleRegister}>Register</button>
       </div>
