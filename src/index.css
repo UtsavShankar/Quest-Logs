@@ -1,4 +1,5 @@
 body, button, input {
+  --secondary-color: #262626;
   background-color: black;
   margin: 0;
   font-family: 'EB Garamond', 'Georgia', serif;
@@ -15,7 +16,8 @@ h1, h2 {
 }
 
 button {
-  background: #262626;
+  background: var(--secondary-color);
+  cursor: pointer;
 }
 
 input {
@@ -26,31 +28,61 @@ input[type="date"]::-webkit-calendar-picker-indicator {
   filter: invert(1);
 }
 
-.video-container {
-  position: relative;
-  width: 100%;
-  height: 100%;
-  overflow: hidden;
-}
-
-.background-video {
+.tag-picker {
   position: absolute;
   top: 0;
-  left: 0;
-  width: 100vw;
-  height: 100vh;
-  z-index: -2;
-  pointer-events: none;
+  background-color: black;
+  border: 0.5px solid gray;
+  box-sizing: border-box;
+  width: 250px;
+  max-height: 150px;
+  z-index: 1;
+  display: flex;
+  flex-direction: column;
+  flex-shrink: 0;
 }
 
-.video-overlay {
-  position: absolute;
-  top: 0;
-  left: 0;
+.tag-search-bar {
   width: 100%;
-  height: 100%;
-  background-color: rgba(0, 0, 0, 0.5); /* Adjust opacity as needed */
-  z-index: -1;
+  height: 35px;
+  box-sizing: border-box;
+  display: flex;
+  background-color: #262626;
+  border: none;
+  padding: 0.3rem;
+}
+
+.tag-search-input {
+  flex: 1;
+  background-color: transparent;
+  border: none;
+  padding: 0.5rem;
+}
+
+.tag-list {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  overflow-y: scroll;
+  scrollbar-width: none;
+  padding: 6px 0px 6px;
+}
+
+.tag {
+  border: 0.5px solid gray;
+  padding: 0.1rem 0.5rem 0.1rem;
+  align-items: center;
+}
+
+.search-result {
+  padding: 0.4rem 0.5rem 0.4rem;
+  background-color: transparent;
+  text-align: left;
+  border: none;
+}
+
+.search-result:hover {
+  background-color: var(--secondary-color);
 }
 
 code {

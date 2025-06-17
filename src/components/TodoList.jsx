@@ -15,6 +15,7 @@ import {
 import { DndContext, PointerSensor, useSensor, useSensors} from "@dnd-kit/core";
 import { SortableContext, arrayMove } from "@dnd-kit/sortable";
 import TodoItem from "./TodoItem";
+import TagPicker from "./Tags";
 import { restrictToVerticalAxis } from "@dnd-kit/modifiers";
 
 export default function TodoList({ user }) {
@@ -24,7 +25,7 @@ export default function TodoList({ user }) {
     useSensor(PointerSensor)
   );
   const [isAddingTag, setIsAddingTag] = useState(false);
-  const [tag, setTag] = useState("");
+  const [tag, setTag] = useState(null);
   const [isAddingDate, setIsAddingDate] = useState(false);
   const [deadline, setDeadline] = useState(null);
 
@@ -36,24 +37,10 @@ export default function TodoList({ user }) {
       orderBy("sortOrder", "asc")
     );
     const snapshot = await getDocs(q);
-    for (const docSnap of snapshot.docs) {
-      const data = docSnap.data();
-
-      if (typeof data.title === "object" && data.title !== null && "title" in data.title) {
-        const newTitle = data.title.title;
-        await updateDoc(doc(db, "todos", docSnap.id), { title: newTitle });
-      }
-    }
-    snapshot.forEach((doc) => {
-      const data = doc.data();
-      console.log("Title:", data.title);
-      console.log("Deadline:", data.deadline);
-    });
-    const items = snapshot.docs.map((docSnap) => ({
+    const items = snapshot.docs.map(docSnap => ({
       id: docSnap.id,
       ...docSnap.data()
     }));
-    console.log("Loaded todos:", items);
     setTodos(items);
   }, [user]);
 
@@ -80,9 +67,10 @@ export default function TodoList({ user }) {
     loadTodos();
   };
 
-  const updateTodo = async (id, newTitle, newDeadline) => {
+  const updateTodo = async (id, newTitle, newTag, newDeadline) => {
     await updateDoc(doc(db, "todos", id), { 
       title: newTitle,
+      tags: newTag ? [newTag] : [],
       deadline: newDeadline,
     });
     loadTodos();
@@ -129,18 +117,22 @@ export default function TodoList({ user }) {
           </ul>
         </SortableContext>
       </DndContext>
-      <input value={newTask} placeholder="Enter new quest" onChange={(e) => setNewTask(e.target.value)} />
-      {
-        !isAddingTag
-        ? <button onClick={() => setIsAddingTag(true)}>Add Tag</button>
-        : <input onChange={(e) => setTag(e.target.value)} placeholder="Tag"/>
-      }
-      {
-        !isAddingDate
-        ? <button value={tag || ""} onClick={() => setIsAddingDate(true)}>Add Date</button>
-        : <input type="date" value={deadline || ""} onChange={(e) => setDeadline(e.target.value)}/>
-      }
-      <button onClick={addTodo}>Add Quest</button>
+      <div style={{ width: '80%', left: '10%', position: 'relative', display: 'grid', gridTemplateColumns: "1fr 100px 110px 150px auto", gap: '8px', alignItems: 'center'}}>
+        <input value={newTask} placeholder="Enter new quest" onChange={(e) => setNewTask(e.target.value)} />
+        {
+          !isAddingTag
+          ? tag
+            ? <span onClick={() => setIsAddingTag(true)}>{tag.name}</span>
+            : <button onClick={() => setIsAddingTag(true)}>Add Tag</button>
+          : <TagPicker userId={user.uid} editTag={tag} onUpdate={newTag => setTag(newTag)} endEdit={() => setIsAddingTag(false)}/>
+        }
+        {
+          !isAddingDate
+          ? <button value={tag || ""} onClick={() => setIsAddingDate(true)}>Add Date</button>
+          : <input type="date" value={deadline || ""} onChange={(e) => setDeadline(e.target.value)}/>
+        }
+        <button onClick={addTodo}>Add Quest</button>
+      </div>
     </div>
   );
 }
