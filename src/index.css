@@ -1,4 +1,5 @@
 body, button, input {
+  --secondary-color: #262626;
   background-color: black;
   margin: 0;
   font-family: 'EB Garamond', 'Georgia', serif;
@@ -15,7 +16,8 @@ h1, h2 {
 }
 
 button {
-  background: #262626;
+  background: var(--secondary-color);
+  cursor: pointer;
 }
 
 input {
@@ -33,7 +35,7 @@ input[type="date"]::-webkit-calendar-picker-indicator {
   border: 0.5px solid gray;
   box-sizing: border-box;
   width: 200px;
-  height: 150px;
+  max-height: 150px;
   z-index: 1;
   display: flex;
   flex-direction: column;
@@ -42,9 +44,17 @@ input[type="date"]::-webkit-calendar-picker-indicator {
 
 .tag-search-bar {
   width: 100%;
+  height: 35px;
   box-sizing: border-box;
-  height: 25px;
+  display: flex;
   background-color: #262626;
+  border: none;
+  padding: 0.3rem;
+}
+
+.tag-search-input {
+  flex: 1;
+  background-color: transparent;
   border: none;
   padding: 0.5rem;
 }
@@ -53,10 +63,25 @@ input[type="date"]::-webkit-calendar-picker-indicator {
   flex: 1;
   display: flex;
   flex-direction: column;
-  gap: 4px;
   overflow-y: scroll;
   scrollbar-width: none;
-  padding: 0.5rem;
+  padding: 6px 0px 6px;
+}
+
+.tag {
+  border: 0.5px solid gray;
+  padding: 0.1rem 0.5rem 0.1rem;
+}
+
+.search-result {
+  padding: 0.4rem 0.5rem 0.4rem;
+  background-color: transparent;
+  text-align: left;
+  border: none;
+}
+
+.search-result:hover {
+  background-color: var(--secondary-color);
 }
 
 code {

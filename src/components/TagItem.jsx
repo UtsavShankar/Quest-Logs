@@ -1,7 +1,7 @@
-export default function TagItem({ children }) {
+export default function TagItem({ children, onClick }) {
     return (
-        <div>
-            {children}
-        </div>
+        <button className="search-result" onClick={onClick}>
+            <span className="tag">{children}</span>
+        </button>
     )
 };

@@ -36,24 +36,10 @@ export default function TodoList({ user }) {
       orderBy("sortOrder", "asc")
     );
     const snapshot = await getDocs(q);
-    for (const docSnap of snapshot.docs) {
-      const data = docSnap.data();
-
-      if (typeof data.title === "object" && data.title !== null && "title" in data.title) {
-        const newTitle = data.title.title;
-        await updateDoc(doc(db, "todos", docSnap.id), { title: newTitle });
-      }
-    }
-    snapshot.forEach((doc) => {
-      const data = doc.data();
-      console.log("Title:", data.title);
-      console.log("Deadline:", data.deadline);
-    });
-    const items = snapshot.docs.map((docSnap) => ({
+    const items = snapshot.docs.map(docSnap => ({
       id: docSnap.id,
       ...docSnap.data()
     }));
-    console.log("Loaded todos:", items);
     setTodos(items);
   }, [user]);
 
@@ -83,7 +69,7 @@ export default function TodoList({ user }) {
   const updateTodo = async (id, newTitle, newTag, newDeadline) => {
     await updateDoc(doc(db, "todos", id), { 
       title: newTitle,
-      tags: [newTag],
+      tags: newTag ? [newTag] : [],
       deadline: newDeadline,
     });
     loadTodos();

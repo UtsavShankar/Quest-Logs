@@ -15,8 +15,8 @@ export default function TodoItem({ todo, onUpdate, onDelete, userTags }) {
     transition,
     padding: '3px'
   };
-  const [editTag, setEditTag] = useState(todo.tags ? todo.tags[0] : "");
-  const [isAddingTag, setIsAddingTag] = useState(false);
+  const [isEditingTag, setIsEditingTag] = useState(false);
+  const [editTag, setEditTag] = useState(todo.tags ? todo.tags[0] : null);
   const [editDeadline, setEditDeadline] = useState(todo.deadline ?? "");
   const [isAddingDate, setIsAddingDate] = useState(false);
 
@@ -32,8 +32,13 @@ export default function TodoItem({ todo, onUpdate, onDelete, userTags }) {
   const save = () => {
     onUpdate(todo.id, editVal, editTag, editDeadline);
     setIsEditing(false);
-    setIsAddingTag(false);
+    setIsEditingTag(false);
   };
+
+  const cancel = () => {
+    setIsEditing(false);
+    setIsEditingTag(false);
+  }
 
   return (
     <li ref={setNodeRef} style={style} {...attributes}>
@@ -41,9 +46,16 @@ export default function TodoItem({ todo, onUpdate, onDelete, userTags }) {
         <div style={{ position: 'relative', display: 'grid', gridTemplateColumns: "1fr 100px 110px 150px auto", gap: '8px', alignItems: 'center'}}>
           <input value={editVal} onChange={(e) => setEditVal(e.target.value)}/>
           {
-            (todo.tags && todo.tags[0] !== "") || isAddingTag
-            ? <TagPicker todo={todo} userTags={userTags}/>
-            : <button onClick={() => setIsAddingTag(true)}>Add Tag</button>
+            isEditingTag
+            ? <TagPicker 
+                todo={todo} 
+                userTags={userTags} 
+                onUpdate={newTag => setEditTag(newTag)} 
+                endEdit={() => setIsEditingTag(false)}
+              />
+            : editTag
+              ? <span onClick={() => setIsEditingTag(true)}>{editTag.name}</span>
+              : <button onClick={() => setIsEditingTag(true)}>Add Tag</button>
           }
           {
             todo.deadline
@@ -55,14 +67,14 @@ export default function TodoItem({ todo, onUpdate, onDelete, userTags }) {
           <div/>
           <div>
             <button onClick={save}>Save</button>
-            <button onClick={() => setIsEditing(false)}>Cancel</button>
+            <button onClick={cancel}>Cancel</button>
           </div>
         </div>
       ) : (
         <div style={{ display: 'grid', gridTemplateColumns: "1fr 100px 110px 150px auto", gap: '8px', alignItems: 'left'}}>
           <div style={{ display: 'contents', cursor: 'default' }} {...listeners}>
           <span>{todo.title}</span>
-          <span>{todo.tags ? todo.tags[0] : ""}</span>
+          <span>{(todo.tags && todo.tags[0]) ? todo.tags[0].name : ""}</span>
           <span>{todo.deadline
             ? new Date(todo.deadline).toLocaleDateString("en-US", {
               year: "numeric",
