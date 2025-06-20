@@ -14,11 +14,12 @@ import {
 } from "https://www.gstatic.com/firebasejs/11.8.0/firebase-firestore.js";
 import { DndContext, PointerSensor, useSensor, useSensors} from "@dnd-kit/core";
 import { SortableContext, arrayMove } from "@dnd-kit/sortable";
+import { restrictToVerticalAxis } from "@dnd-kit/modifiers";
 import TodoItem from "./TodoItem";
 import TagPicker from "./Tags";
-import { restrictToVerticalAxis } from "@dnd-kit/modifiers";
+import SettingsMenu from "./Settings";
 
-export default function TodoList({ user }) {
+export default function TodoList({ user, settings, setSettings }) {
   const [todos, setTodos] = useState([]);
   const [newTask, setNewTask] = useState("");
   const sensors = useSensors(
@@ -28,6 +29,7 @@ export default function TodoList({ user }) {
   const [tag, setTag] = useState(null);
   const [isAddingDate, setIsAddingDate] = useState(false);
   const [deadline, setDeadline] = useState(null);
+  const [settingsOpen, setSettingsOpen] = useState(false);
 
   const loadTodos = useCallback(async () => {
     if (!user) return;
@@ -104,35 +106,43 @@ export default function TodoList({ user }) {
   };
 
   return (
-    <div style={{ padding: '20px' }}>
-      <button onClick={handleLogout} style={{marginBottom: '10px'}}>Logout</button>
-      <h1 style={{textAlign: 'center'}}>Quest Log</h1>
-      <br />
-      <DndContext onDragEnd={handleDragEnd} sensors={sensors} modifiers={[restrictToVerticalAxis]}>
-        <SortableContext items={todos}>
-          <ul>
-            {todos.map((todo) => (
-              <TodoItem key={todo.id} todo={todo} onUpdate={updateTodo} onDelete={deleteTodo} />
-            ))}
-          </ul>
-        </SortableContext>
-      </DndContext>
-      <div style={{ width: '80%', left: '10%', position: 'relative', display: 'grid', gridTemplateColumns: "1fr 100px 110px 150px auto", gap: '8px', alignItems: 'center'}}>
-        <input value={newTask} placeholder="Enter new quest" onChange={(e) => setNewTask(e.target.value)} />
-        {
-          !isAddingTag
-          ? tag
-            ? <span onClick={() => setIsAddingTag(true)}>{tag.name}</span>
-            : <button onClick={() => setIsAddingTag(true)}>Add Tag</button>
-          : <TagPicker userId={user.uid} editTag={tag} onUpdate={newTag => setTag(newTag)} endEdit={() => setIsAddingTag(false)}/>
-        }
-        {
-          !isAddingDate
-          ? <button value={tag || ""} onClick={() => setIsAddingDate(true)}>Add Date</button>
-          : <input type="date" value={deadline || ""} onChange={(e) => setDeadline(e.target.value)}/>
-        }
-        <button onClick={addTodo}>Add Quest</button>
+    <div>
+      <div style={{ padding: '20px' }}>
+        <div style={{display: 'flex', justifyContent: 'space-between'}}>
+          <button onClick={() => setSettingsOpen(true)}>Settings</button>
+          <button onClick={handleLogout}>Logout</button>
+        </div>
+        <h1 style={{textAlign: 'center'}}>Quest Log</h1>
+        <br />
+        <DndContext onDragEnd={handleDragEnd} sensors={sensors} modifiers={[restrictToVerticalAxis]}>
+          <SortableContext items={todos}>
+            <ul>
+              {todos.map((todo) => (
+                <TodoItem key={todo.id} todo={todo} onUpdate={updateTodo} onDelete={deleteTodo} />
+              ))}
+            </ul>
+          </SortableContext>
+        </DndContext>
+        <div style={{ width: '80%', left: '10%', position: 'relative', display: 'grid', gridTemplateColumns: "1fr 100px 110px 150px auto", gap: '8px', alignItems: 'center'}}>
+          <input value={newTask} placeholder="Enter new quest" onChange={(e) => setNewTask(e.target.value)} />
+          {
+            !isAddingTag
+            ? tag
+              ? <span onClick={() => setIsAddingTag(true)}>{tag.name}</span>
+              : <button onClick={() => setIsAddingTag(true)}>Add Tag</button>
+            : <TagPicker userId={user.uid} editTag={tag} onUpdate={newTag => setTag(newTag)} endEdit={() => setIsAddingTag(false)}/>
+          }
+          {
+            !isAddingDate
+            ? <button value={tag || ""} onClick={() => setIsAddingDate(true)}>Add Date</button>
+            : <input type="date" value={deadline || ""} onChange={(e) => setDeadline(e.target.value)}/>
+          }
+          <button onClick={addTodo}>Add Quest</button>
+        </div>
       </div>
+      {
+        settingsOpen && <SettingsMenu settings={settings} setSettings={setSettings} closeMenu={() => setSettingsOpen(false)}/>
+      }
     </div>
   );
 }

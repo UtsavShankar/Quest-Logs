@@ -10,11 +10,6 @@ body, button, input {
   -moz-osx-font-smoothing: grayscale;
 }
 
-.main {
-  width: 100%;
-  height: 100vh;
-}
-
 h1, h2 {
   font-weight: 400;
   color: #D8AF67
@@ -109,6 +104,96 @@ input[type="date"]::-webkit-calendar-picker-indicator {
   height: 100%;
   background-color: rgba(0, 0, 0, 0.5);
   z-index: -1;
+}
+
+.settings-wrapper {
+  position: fixed;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  box-sizing: border-box;
+}
+
+.settings-menu {
+  position: relative;
+  height: 500px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.settings-frame {
+  position: absolute;
+  height: 100%;
+}
+
+.settings-frame-bg {
+  position: absolute;
+  opacity: 85%;
+  height: 100%;
+}
+
+.settings-close-button {
+  all: unset;
+  position: absolute;
+  z-index: 12;
+  right: 0;
+  transform: translate(50%, -50%);
+}
+
+.settings {
+  position: relative;
+  height: 80%;
+  aspect-ratio: 64 / 55;
+}
+
+.circle {
+  border: none;
+  position: absolute;
+  background: none;
+  height: 25px;
+  width: 25px;
+  border-radius: 50%;
+  transform: translate(8px, 8px);
+}
+
+.side-bar {
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+}
+
+.side-button {
+  all: unset;
+  font-size: 22px;
+  text-align: right;
+  cursor: pointer;
+}
+
+.side-button.selected {
+  color: #D8AF67;
+}
+
+.options {
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+}
+
+.option-label {
+  width: 150px;
+}
+
+.vertical-line {
+  position: absolute;
+  top: -4.5%;
+  background: #B48F64;
+  background: linear-gradient(0deg, #6E462C 0%, #B48F64 50%, #6E462C 100%);
+  width: 1px;
+  height: 109%;
 }
 
 code {
