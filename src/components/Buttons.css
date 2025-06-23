@@ -1,0 +1,52 @@
+.button-wrapper {
+    position: relative;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.button-wrapper.fancy {
+    height: 45px;
+}
+
+.button-wrapper.settings {
+    height: 35px;
+}
+
+.fancy-button-bg {
+  position: absolute;
+  height: 100%;
+}
+
+.fancy-button-bg.hover {
+  filter: brightness(0.8);
+}
+
+.button-region {
+  background: none;
+  border: none;
+  z-index: 2;
+}
+
+.button-region.fancy {
+    height: 38px;
+    width: 130px;
+    margin: 0 15px 0;
+}
+
+.button-region.settings {
+    border-radius: 50%;
+    height: 25px;
+    width: 25px;
+    opacity: 0.5;
+}
+
+.settings-button-shadow {
+    position: absolute;
+    border-radius: 50%;
+    height: 25px;
+    width: 25px;
+    background: black;
+    opacity: 0.7;
+    filter: blur(4px);
+}

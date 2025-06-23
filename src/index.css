@@ -1,4 +1,5 @@
 body, button, input {
+  --highlight-color: #D8AF67;
   --secondary-color: #262626;
   background-color: black;
   margin: 0;
@@ -12,7 +13,7 @@ body, button, input {
 
 h1, h2 {
   font-weight: 400;
-  color: #D8AF67
+  color: var(--highlight-color)
 }
 
 button {
@@ -26,6 +27,54 @@ input {
 
 input[type="date"]::-webkit-calendar-picker-indicator {
   filter: invert(1);
+}
+
+input[type="checkbox"] {
+  appearance: none;
+  width: 12px;
+  height: 12px;
+  background: none;
+  border: 1px solid var(--highlight-color);
+  transform: rotate(45deg);
+  cursor: pointer;
+}
+
+input[type="checkbox"]:checked::before {
+  content: "";
+  position: absolute;
+  inset: 2px;
+  background-color: var(--highlight-color);
+}
+
+input[type="range"] {
+  appearance: none;
+  height: 5px;
+  border: 1px solid var(--highlight-color);
+  border-radius: 4px;
+  background: linear-gradient(to right, #7C643C 50%, #333 50%);
+}
+
+input[type="range"]::-webkit-slider-runnable-track {
+  height: 5px;
+  border-radius: 4px;
+}
+
+input[type="range"]::-webkit-slider-thumb {
+  appearance: none;
+  width: 14px;
+  height: 14px;
+  background: #E4D4BA;
+  border: 1.5px solid var(--highlight-color);
+  transform: scaleX(0.5) rotate(45deg);
+  margin-top: -5px;
+  cursor: pointer;
+}
+
+input:not([type]), input[type="text"], input[type="password"] {
+  background-color: rgba(0, 0, 0, 0.75);
+  border: 1px solid #7C643C;
+  padding: 2px 8px 2px;
+  width: 200px;
 }
 
 .tag-picker {
@@ -119,7 +168,7 @@ input[type="date"]::-webkit-calendar-picker-indicator {
 
 .settings-menu {
   position: relative;
-  height: 500px;
+  height: 550px;
   display: flex;
   align-items: center;
   justify-content: center;
@@ -174,7 +223,7 @@ input[type="date"]::-webkit-calendar-picker-indicator {
 }
 
 .side-button.selected {
-  color: #D8AF67;
+  color: var(--highlight-color);
 }
 
 .options {

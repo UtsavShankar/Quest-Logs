@@ -1,4 +1,4 @@
-import React, { useEffect, useState, useCallback } from "react";
+import { useEffect, useState, useCallback } from "react";
 import { db, auth } from "../firebase.js";
 import { signOut } from "firebase/auth";
 import {
@@ -18,6 +18,7 @@ import { restrictToVerticalAxis } from "@dnd-kit/modifiers";
 import TodoItem from "./TodoItem";
 import TagPicker from "./Tags";
 import SettingsMenu from "./Settings";
+import { SettingsButton } from "./Buttons";
 
 export default function TodoList({ user, settings, setSettings }) {
   const [todos, setTodos] = useState([]);
@@ -109,14 +110,14 @@ export default function TodoList({ user, settings, setSettings }) {
     <div>
       <div style={{ padding: '20px' }}>
         <div style={{display: 'flex', justifyContent: 'space-between'}}>
-          <button onClick={() => setSettingsOpen(true)}>Settings</button>
+          <SettingsButton onClick={() => setSettingsOpen(true)} />
           <button onClick={handleLogout}>Logout</button>
         </div>
         <h1 style={{textAlign: 'center'}}>Quest Log</h1>
         <br />
         <DndContext onDragEnd={handleDragEnd} sensors={sensors} modifiers={[restrictToVerticalAxis]}>
           <SortableContext items={todos}>
-            <ul>
+            <ul style={{listStyleType: "none"}}>
               {todos.map((todo) => (
                 <TodoItem key={todo.id} todo={todo} onUpdate={updateTodo} onDelete={deleteTodo} />
               ))}

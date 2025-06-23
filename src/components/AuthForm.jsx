@@ -1,6 +1,8 @@
 import React, { useState } from "react";
 import { auth } from "../firebase.js";
 import { signInWithEmailAndPassword, createUserWithEmailAndPassword } from "https://www.gstatic.com/firebasejs/11.8.0/firebase-auth.js";
+import { FancyButton } from "./Buttons";
+import "./Buttons.css";
 
 export default function AuthForm() {
   const [email, setEmail] = useState("");
@@ -27,14 +29,14 @@ export default function AuthForm() {
   return (
     <div style={{ position: 'absolute', height: '100%', width: '100%', display:'flex', 
     flexDirection: 'column', alignItems: 'center', justifyContent: 'center', gap: '10px'}}>
-      <h2>Login / Register</h2>
-      <input placeholder="Email" value={email} onChange={(e) => setEmail(e.target.value)} />
-      <input placeholder="Password" type="password" value={password} onChange={(e) => setPassword(e.target.value)} />
+      <h2>Log in</h2>
+      <input className="login-input" placeholder="Email" value={email} onChange={(e) => setEmail(e.target.value)} />
+      <input className="login-input" placeholder="Password" type="password" value={password} onChange={(e) => setPassword(e.target.value)} />
+      {<span style={{ color: "red" }}>{error ? error : "\u00A0"}</span>}
       <div style={{display: 'flex', gap: '10px'}}>
-        <button onClick={handleLogin}>Login</button>
-        <button onClick={handleRegister}>Register</button>
+        <FancyButton onClick={handleLogin} label="Login"/>
+        <FancyButton onClick={handleRegister} label="Register"/>
       </div>
-      {error && <p style={{ color: "red" }}>{error}</p>}
     </div>
   );
 }

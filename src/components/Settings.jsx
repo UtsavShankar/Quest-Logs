@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 
 export default function SettingsMenu({ closeMenu, settings, setSettings }) {
     const [currentSection, setCurrentSection] = useState("preferences");
@@ -49,24 +49,43 @@ export default function SettingsMenu({ closeMenu, settings, setSettings }) {
             ...prev,
             [key]: newValue
         }));
-        console.log("Changed ", key, " to ", newValue);
     }
 
     function Slider({ label, min, max, value, onChange }) {
-        return <label style={{display: "flex"}}>
+        return <label style={{display: "flex", alignItems: "center"}}>
             <span className="option-label"> {label} </span>
-            <input type="range" value={value} min={min} max={max} 
+            <input style={{width: "130px"}} type="range" value={value} min={min} max={max} 
                 onChange={(e) => onChange(Number(e.target.value))}/>
+            <span style={{marginLeft: "10px"}}>{settings.ambienceVolume}</span>
         </label>
     }
 
     function Switch({label, value, onChange}) {
-        return <label style={{display: "flex"}}>
+        return <label style={{display: "flex", alignItems: "center"}}>
             <span className="option-label">{label}</span>
             <input type="checkbox" checked={value} 
                 onChange={(e) => onChange(e.target.checked)}/>
         </label>
     }
+
+    useEffect(() => {
+        const sliders = document.querySelectorAll('.settings input[type="range"]');
+
+        sliders.forEach(slider => {
+            const updateSliderFill = () => {
+                const value = slider.value;
+                const percent = (value - slider.min) / (slider.max - slider.min) * 100;
+                slider.style.background = `linear-gradient(to right, #7C643C ${percent}%, #333 ${percent}%)`;
+            };
+
+            slider.addEventListener("input", updateSliderFill);
+            updateSliderFill();
+
+            return () => {
+            slider.removeEventListener("input", updateSliderFill);
+            };
+        });
+    }, [settings]);
 
     return (
         <div className="settings-wrapper">
@@ -90,7 +109,7 @@ export default function SettingsMenu({ closeMenu, settings, setSettings }) {
                     </div>
                     <div className="vertical-line" style={{left: "30%"}}/>
                     <div className="vertical-line" style={{left: "31%"}}/>
-                    <div style={{position: "absolute", top: "8%", left: "40%"}}>
+                    <div style={{position: "absolute", top: "8%", left: "37%"}}>
                         <div className="options">
                             {sections.find(sect => sect.key === currentSection).options.map(opt => {
                                 const commonProps = {

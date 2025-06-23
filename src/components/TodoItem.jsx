@@ -42,6 +42,8 @@ export default function TodoItem({ todo, onUpdate, onDelete }) {
   }
 
   return (
+    <div style={{display: "grid", gridTemplateColumns: "25px auto", alignItems: "center"}}>
+      <input type="checkbox"/>
     <li ref={setNodeRef} style={style} {...attributes}>
       {isEditing ? (
         <div style={{ position: 'relative', display: 'grid', gridTemplateColumns: "1fr 100px 110px 150px auto", gap: '8px', alignItems: 'center'}}>
@@ -93,5 +95,6 @@ export default function TodoItem({ todo, onUpdate, onDelete }) {
         </div>
       )}
     </li>
+    </div>
   );
 }
