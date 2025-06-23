@@ -50,3 +50,13 @@
     opacity: 0.7;
     filter: blur(4px);
 }
+
+.simple-button {
+    background: none;
+    border: none;
+    text-shadow: 0 0 4px black;
+}
+
+.simple-button:hover {
+    color: var(--highlight-color);
+}

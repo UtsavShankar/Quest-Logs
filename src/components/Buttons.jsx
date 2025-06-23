@@ -1,6 +1,6 @@
 import { useState } from "react";
 
-export function FancyButton({ onClick, label }) {
+export function FancyButton({ onClick, children }) {
     const [hovered, setHovered] = useState(false);
     return (
         <div className="button-wrapper fancy">
@@ -10,7 +10,7 @@ export function FancyButton({ onClick, label }) {
                 onClick={onClick} 
                 onMouseEnter={() => setHovered(true)}
                 onMouseLeave={() => setHovered(false)}>
-                {label}
+                {children}
             </button>
         </div>
     )
@@ -31,5 +31,11 @@ export function SettingsButton({ onClick }) {
                 onMouseLeave={() => setHovered(false)}
             />
         </div>
+    )
+}
+
+export function SimpleButton({ onClick, children}) {
+    return (
+        <button className="simple-button" onClick={onClick}>{children}</button>
     )
 }

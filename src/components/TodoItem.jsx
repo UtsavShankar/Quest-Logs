@@ -2,6 +2,7 @@ import React, { useState } from "react";
 import { useSortable } from "@dnd-kit/sortable";
 import { CSS } from "@dnd-kit/utilities";
 import TagPicker from "./Tags";
+import { SimpleButton } from "./Buttons";
 
 export default function TodoItem({ todo, onUpdate, onDelete }) {
   const [isEditing, setIsEditing] = useState(false);
@@ -41,10 +42,24 @@ export default function TodoItem({ todo, onUpdate, onDelete }) {
     setEditTag(todo.tags && todo.tags[0] ? todo.tags[0] : null);
   }
 
+  function DragHandle({ listeners }) {
+    return (
+      <div style={{display: "flex", justifyContent: "center"}}>
+        <div style={{display:"grid", gridTemplateColumns: "3px 3px", gridGap: "3px", cursor: "grab"}} {...listeners}>
+          <div className="dot" />
+          <div className="dot" />
+          <div className="dot" />
+          <div className="dot" />
+          <div className="dot" />
+          <div className="dot" />
+        </div>
+      </div>
+    )
+  }
+
   return (
-    <div style={{display: "grid", gridTemplateColumns: "25px auto", alignItems: "center"}}>
+    <li ref={setNodeRef} style={{display: "grid", gridTemplateColumns: "25px auto 25px", alignItems: "center", ...style}} {...attributes}>
       <input type="checkbox"/>
-    <li ref={setNodeRef} style={style} {...attributes}>
       {isEditing ? (
         <div style={{ position: 'relative', display: 'grid', gridTemplateColumns: "1fr 100px 110px 150px auto", gap: '8px', alignItems: 'center'}}>
           <input value={editVal} onChange={(e) => setEditVal(e.target.value)}/>
@@ -58,19 +73,19 @@ export default function TodoItem({ todo, onUpdate, onDelete }) {
               />
             : editTag
               ? <span onClick={() => setIsEditingTag(true)}>{editTag.name}</span>
-              : <button onClick={() => setIsEditingTag(true)}>Add Tag</button>
+              : <SimpleButton onClick={() => setIsEditingTag(true)}>Add Tag</SimpleButton>
           }
           {
             todo.deadline
             ? <input type="date" value={editDeadline} onChange={(e) => setEditDeadline(e.target.value)}/>
             : !isAddingDate
-              ? <button onClick={() => setIsAddingDate(true)}>Add Date</button>
+              ? <SimpleButton onClick={() => setIsAddingDate(true)}>Add Date</SimpleButton>
               : <input type="date" value={editDeadline || ""} onChange={(e) => setEditDeadline(e.target.value)}/>
           }
           <div/>
           <div>
-            <button onClick={save}>Save</button>
-            <button onClick={cancel}>Cancel</button>
+            <SimpleButton onClick={save}>Save</SimpleButton>
+            <SimpleButton onClick={cancel}>Cancel</SimpleButton>
           </div>
         </div>
       ) : (
@@ -89,12 +104,12 @@ export default function TodoItem({ todo, onUpdate, onDelete }) {
           <span>{daysRemaining}</span>
           </div>
           <div>
-            <button onClick={() => {setIsEditing(true); console.log("editing")}}>Edit</button>
-            <button onClick={() => onDelete(todo.id)}>Delete</button>
+            <SimpleButton onClick={() => {setIsEditing(true); console.log("editing")}}>Edit</SimpleButton>
+            <SimpleButton onClick={() => onDelete(todo.id)}>Delete</SimpleButton>
           </div>
         </div>
       )}
+      <DragHandle listeners={listeners}/>
     </li>
-    </div>
   );
 }

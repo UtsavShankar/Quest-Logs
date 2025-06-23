@@ -18,7 +18,7 @@ import { restrictToVerticalAxis } from "@dnd-kit/modifiers";
 import TodoItem from "./TodoItem";
 import TagPicker from "./Tags";
 import SettingsMenu from "./Settings";
-import { SettingsButton } from "./Buttons";
+import { FancyButton, SettingsButton, SimpleButton } from "./Buttons";
 
 export default function TodoList({ user, settings, setSettings }) {
   const [todos, setTodos] = useState([]);
@@ -111,7 +111,7 @@ export default function TodoList({ user, settings, setSettings }) {
       <div style={{ padding: '20px' }}>
         <div style={{display: 'flex', justifyContent: 'space-between'}}>
           <SettingsButton onClick={() => setSettingsOpen(true)} />
-          <button onClick={handleLogout}>Logout</button>
+          <SimpleButton onClick={handleLogout}>Log out</SimpleButton>
         </div>
         <h1 style={{textAlign: 'center'}}>Quest Log</h1>
         <br />
@@ -125,17 +125,17 @@ export default function TodoList({ user, settings, setSettings }) {
           </SortableContext>
         </DndContext>
         <div style={{ width: '80%', left: '10%', position: 'relative', display: 'grid', gridTemplateColumns: "1fr 100px 110px 150px auto", gap: '8px', alignItems: 'center'}}>
-          <input value={newTask} placeholder="Enter new quest" onChange={(e) => setNewTask(e.target.value)} />
+          <input className="text-input" value={newTask} placeholder="Enter new quest" onChange={(e) => setNewTask(e.target.value)} />
           {
             !isAddingTag
             ? tag
-              ? <span onClick={() => setIsAddingTag(true)}>{tag.name}</span>
-              : <button onClick={() => setIsAddingTag(true)}>Add Tag</button>
+              ? <span className="tag" onClick={() => setIsAddingTag(true)}>{tag.name}</span>
+              : <SimpleButton onClick={() => setIsAddingTag(true)}>Add Tag</SimpleButton>
             : <TagPicker userId={user.uid} editTag={tag} onUpdate={newTag => setTag(newTag)} endEdit={() => setIsAddingTag(false)}/>
           }
           {
             !isAddingDate
-            ? <button value={tag || ""} onClick={() => setIsAddingDate(true)}>Add Date</button>
+            ? <SimpleButton value={tag || ""} onClick={() => setIsAddingDate(true)}>Add Date</SimpleButton>
             : <input type="date" value={deadline || ""} onChange={(e) => setDeadline(e.target.value)}/>
           }
           <button onClick={addTodo}>Add Quest</button>

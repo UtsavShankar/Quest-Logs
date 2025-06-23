@@ -13,16 +13,22 @@ body, button, input {
 
 h1, h2 {
   font-weight: 400;
-  color: var(--highlight-color)
+  color: var(--highlight-color);
 }
 
 button {
-  background: var(--secondary-color);
+  background: rgba(0, 0, 0, 0.75);
+  border: 1px solid gray;
   cursor: pointer;
 }
 
 input {
   outline:none
+}
+
+input[type="date"] {
+  background: none;
+  border: 0.5px solid gray;
 }
 
 input[type="date"]::-webkit-calendar-picker-indicator {
@@ -70,11 +76,10 @@ input[type="range"]::-webkit-slider-thumb {
   cursor: pointer;
 }
 
-input:not([type]), input[type="text"], input[type="password"] {
+.text-input {
   background-color: rgba(0, 0, 0, 0.75);
   border: 1px solid #7C643C;
   padding: 2px 8px 2px;
-  width: 200px;
 }
 
 .tag-picker {
@@ -212,12 +217,12 @@ input:not([type]), input[type="text"], input[type="password"] {
 .side-bar {
   display: flex;
   flex-direction: column;
-  gap: 20px;
+  gap: 10px;
 }
 
 .side-button {
   all: unset;
-  font-size: 22px;
+  font-size: 20px;
   text-align: right;
   cursor: pointer;
 }
@@ -243,6 +248,13 @@ input:not([type]), input[type="text"], input[type="password"] {
   background: linear-gradient(0deg, #6E462C 0%, #B48F64 50%, #6E462C 100%);
   width: 1px;
   height: 109%;
+}
+
+.dot {
+  background-color: gray;
+  height: 3px;
+  width: 3px;
+  border-radius: 50%;
 }
 
 code {

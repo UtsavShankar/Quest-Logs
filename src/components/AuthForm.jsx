@@ -30,12 +30,12 @@ export default function AuthForm() {
     <div style={{ position: 'absolute', height: '100%', width: '100%', display:'flex', 
     flexDirection: 'column', alignItems: 'center', justifyContent: 'center', gap: '10px'}}>
       <h2>Log in</h2>
-      <input className="login-input" placeholder="Email" value={email} onChange={(e) => setEmail(e.target.value)} />
-      <input className="login-input" placeholder="Password" type="password" value={password} onChange={(e) => setPassword(e.target.value)} />
+      <input className="text-input" style={{ width: "200px" }} placeholder="Email" value={email} onChange={(e) => setEmail(e.target.value)} />
+      <input className="text-input" style={{ width: "200px" }} placeholder="Password" type="password" value={password} onChange={(e) => setPassword(e.target.value)} />
       {<span style={{ color: "red" }}>{error ? error : "\u00A0"}</span>}
       <div style={{display: 'flex', gap: '10px'}}>
-        <FancyButton onClick={handleLogin} label="Login"/>
-        <FancyButton onClick={handleRegister} label="Register"/>
+        <FancyButton onClick={handleLogin}>Login</FancyButton>
+        <FancyButton onClick={handleRegister}>Register</FancyButton>
       </div>
     </div>
   );
