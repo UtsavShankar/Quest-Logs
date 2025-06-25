@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import { useSortable } from "@dnd-kit/sortable";
 import { CSS } from "@dnd-kit/utilities";
 import TagPicker from "./Tags";
@@ -20,6 +20,23 @@ export default function TodoItem({ todo, onUpdate, onDelete }) {
   const [editTag, setEditTag] = useState(todo.tags ? todo.tags[0] : null);
   const [editDeadline, setEditDeadline] = useState(todo.deadline ?? "");
   const [isAddingDate, setIsAddingDate] = useState(false);
+
+  // setting timeout for when the deadline expires, reloads every time deadline value is updated, pretty efficient
+  useEffect(() => {
+    if (todo.deadline) {
+      const deadlineDate = new Date(todo.deadline);
+      const now = new Date();
+      const timeout = deadlineDate.getTime() - now.getTime();
+      console.log("Timeout for deadline:", timeout,now, deadlineDate);
+      if (timeout > 0) {
+        const timer = setTimeout(() => {
+          new window.Notification(todo.title, { body: "Your quest has expired! You made a valiant effort!" });         
+        }, timeout);// 5 second for testing, change to timeout for deadline
+        return () => clearTimeout(timer);
+      }
+    }
+  }, [editDeadline]);
+
 
   const daysRemaining = (() => {
     if (!todo.deadline) return "";
