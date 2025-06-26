@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import { useEffect, useState } from "react";
 import { useSortable } from "@dnd-kit/sortable";
 import { CSS } from "@dnd-kit/utilities";
 import TagPicker from "./Tags";
@@ -27,11 +27,26 @@ export default function TodoItem({ todo, onUpdate, onDelete }) {
       const deadlineDate = new Date(todo.deadline);
       const now = new Date();
       const timeout = deadlineDate.getTime() - now.getTime();
-      console.log("Timeout for deadline:", timeout,now, deadlineDate);
+
+      console.log("Timeout for deadline:", timeout, now, deadlineDate);
+
       if (timeout > 0) {
-        const timer = setTimeout(() => {
-          new window.Notification(todo.title, { body: "Your quest has expired! You made a valiant effort!" });         
-        }, timeout);// 5 second for testing, change to timeout for deadline
+        let timer;
+        const scheduleNotification = () => {
+          timer = setTimeout(() => {
+                new window.Notification(todo.title, { body: "Your quest has expired! You made a valiant effort!" });         
+              }, timeout); // 5 second for testing, change to timeout for deadline
+        }
+
+        if (Notification.permission === "granted") {
+          scheduleNotification();
+        } else if (Notification.permission !== "denied") {
+          Notification.requestPermission().then(permission => {
+            if (permission === "granted") {
+              scheduleNotification();
+            }
+          });
+        }
         return () => clearTimeout(timer);
       }
     }

@@ -18,7 +18,7 @@ import { restrictToVerticalAxis } from "@dnd-kit/modifiers";
 import TodoItem from "./TodoItem";
 import TagPicker from "./Tags";
 import SettingsMenu from "./Settings";
-import { FancyButton, SettingsButton, SimpleButton } from "./Buttons";
+import { SettingsButton, SimpleButton } from "./Buttons";
 
 export default function TodoList({ user, settings, setSettings }) {
   const [todos, setTodos] = useState([]);
