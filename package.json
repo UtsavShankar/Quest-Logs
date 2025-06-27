@@ -6,10 +6,11 @@
   "private": true,
   "author": "Utsav Shankar, Celeste Phua",
   "license": "ISC",
-  "type": "module",
+  "homepage": "./",
   "scripts": {
     "start": "electron-forge start",
-    "package": "electron-forge package",
+    "electron-dev": "electron .",
+    "package": "npm run react-build && electron-forge make",
     "make": "electron-forge make",
     "test": "react-scripts test",
     "react-start": "react-scripts start",
@@ -21,7 +22,7 @@
     "@dnd-kit/modifiers": "^9.0.0",
     "@dnd-kit/sortable": "^10.0.0",
     "electron-squirrel-startup": "^1.0.1",
-    "firebase": "^11.8.1",
+    "firebase": "^11.9.1",
     "firebase-admin": "^13.4.0",
     "react": "^19.1.0",
     "react-dom": "^19.1.0",
@@ -40,9 +41,10 @@
     "@testing-library/jest-dom": "^6.6.3",
     "@testing-library/react": "^16.3.0",
     "@testing-library/user-event": "^13.5.0",
+    "concurrently": "^9.2.0",
     "electron": "^36.3.2",
-    "electron-builder": "^26.0.12",
-    "electron-is-dev": "^3.0.1"
+    "electron-is-dev": "^3.0.1",
+    "wait-on": "^8.0.3"
   },
   "eslintConfig": {
     "extends": [

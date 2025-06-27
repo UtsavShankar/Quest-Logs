@@ -11,7 +11,7 @@ import {
   doc,
   updateDoc,
   orderBy
-} from "https://www.gstatic.com/firebasejs/11.8.0/firebase-firestore.js";
+} from "firebase/firestore";
 import { DndContext, PointerSensor, useSensor, useSensors} from "@dnd-kit/core";
 import { SortableContext, arrayMove } from "@dnd-kit/sortable";
 import { restrictToVerticalAxis } from "@dnd-kit/modifiers";

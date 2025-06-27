@@ -4,8 +4,8 @@ export function FancyButton({ onClick, children }) {
     const [hovered, setHovered] = useState(false);
     return (
         <div className="button-wrapper fancy">
-            <img src="/button-1-bg.png" alt="" className={`fancy-button-bg ${hovered && "hover"}`} />
-            <img src="/button-1.png" alt="" className="fancy-button-bg" />
+            <img src={`${process.env.PUBLIC_URL}/button-1-bg.png`} alt="" className={`fancy-button-bg ${hovered && "hover"}`} />
+            <img src={`${process.env.PUBLIC_URL}/button-1.png`} alt="" className="fancy-button-bg" />
             <button className="button-region fancy"
                 onClick={onClick} 
                 onMouseEnter={() => setHovered(true)}
@@ -21,7 +21,7 @@ export function SettingsButton({ onClick }) {
     return (
         <div className="button-wrapper settings">
             <div className="settings-button-shadow"/>
-            <img src={hovered ? "/settings-button-shiny.png" : "/settings-button.png"} 
+            <img src={hovered ? `${process.env.PUBLIC_URL}/settings-button-shiny.png` : `${process.env.PUBLIC_URL}/settings-button.png`} 
                 alt="Settings" 
                 className={"fancy-button-bg"}
             />

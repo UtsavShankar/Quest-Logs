@@ -1,6 +1,6 @@
-import React, { useState } from "react";
+import { useState } from "react";
 import { auth } from "../firebase.js";
-import { signInWithEmailAndPassword, createUserWithEmailAndPassword } from "https://www.gstatic.com/firebasejs/11.8.0/firebase-auth.js";
+import { signInWithEmailAndPassword, createUserWithEmailAndPassword } from "firebase/auth";
 import { FancyButton } from "./Buttons";
 import "./Buttons.css";
 

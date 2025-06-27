@@ -1,8 +1,6 @@
 import { useState, useEffect, useRef } from 'react';
 import { auth } from './firebase';
-import {
-  onAuthStateChanged
-} from 'firebase/auth';
+import { onAuthStateChanged } from 'firebase/auth';
 import AuthForm from "./components/AuthForm";
 import TodoList from "./components/TodoList";
 import BackgroundVideo from './components/Background';
@@ -32,7 +30,7 @@ function App() {
   }, []);
 
   useEffect(() => {
-    fireCracklingRef.current = new Audio("/fire_crackling.mp3");
+    fireCracklingRef.current = new Audio(`${process.env.PUBLIC_URL}/fire_crackling.mp3`);
     fireCracklingRef.current.loop = true;
 
     return () => {
@@ -42,7 +40,7 @@ function App() {
   }, []);
 
   useEffect(() => {
-    windRef.current = new Audio("/wind.mp3");
+    windRef.current = new Audio(`${process.env.PUBLIC_URL}/wind.mp3`);
     windRef.current.loop = true;
     windRef.current.volume = 0.3;
 

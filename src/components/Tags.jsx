@@ -6,7 +6,7 @@ import {
   query,
   where,
   getDocs
-} from "https://www.gstatic.com/firebasejs/11.8.0/firebase-firestore.js";
+} from "firebase/firestore";
 import TagItem from "./TagItem";
 
 export default function TagPicker({ userId, editTag, onUpdate, endEdit }) {

@@ -1,16 +1,13 @@
-import { app, BrowserWindow } from 'electron';
-import { join, dirname } from 'path';
-import { fileURLToPath } from 'url';
+const { app, BrowserWindow } = require('electron');
+const path = require('path');
+
 const isDev = !app.isPackaged;
-const __filename = fileURLToPath(import.meta.url);
-const __dirname = dirname(__filename);
 
 function createWindow() {
   const win = new BrowserWindow({
     width: 800,
     height: 600,
     webPreferences: {
-      preload: join(__dirname, 'src/renderer.js'),
       contextIsolation: false,
       nodeIntegration: true
     }
@@ -19,14 +16,14 @@ function createWindow() {
   win.loadURL(
     isDev
     ? 'http://localhost:3000'
-    : `file://${join(__dirname, 'public/index.html')}`
+    : `file://${path.join(__dirname, 'build/index.html')}`
   );
 }
 
 app.whenReady().then(createWindow);
 
 app.on('window-all-closed', () => {
-  if (process.platform !== 'darwin') app.quit();
+  app.quit();
 });
 
 app.on('activate', () => {

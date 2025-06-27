@@ -90,12 +90,12 @@ export default function SettingsMenu({ closeMenu, settings, setSettings }) {
     return (
         <div className="settings-wrapper">
             <div className="settings-menu">
-                <img className="settings-frame-bg" src="/frame1bg.png" alt=""/>
-                <img className="settings-frame" src="/frame1.png" alt=""></img>
+                <img className="settings-frame-bg" src={`${process.env.PUBLIC_URL}/frame1bg.png`} alt=""/>
+                <img className="settings-frame" src={`${process.env.PUBLIC_URL}/frame1.png`} alt=""></img>
                 <div className="settings">
                     <div className="settings-close-button">
                         <button className="circle" onClick={closeMenu}/>
-                        <img style={{height: "40px"}} src="/close-button-1.png" alt="close button"/>
+                        <img style={{height: "40px"}} src={`${process.env.PUBLIC_URL}/close-button-1.png`} alt="close button"/>
                     </div>
                     <div style={{position: "absolute", top: "8%", right: "75%"}}>
                         <div className="side-bar">
