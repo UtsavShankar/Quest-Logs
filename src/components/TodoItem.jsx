@@ -50,8 +50,8 @@ export default function TodoItem({ todo, onUpdate, onDelete }) {
         return () => clearTimeout(timer);
       }
     }
+  // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [editDeadline]);
-
 
   const daysRemaining = (() => {
     if (!todo.deadline) return "";
