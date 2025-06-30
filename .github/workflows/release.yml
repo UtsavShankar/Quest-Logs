@@ -33,9 +33,6 @@ jobs:
       - name: Build React
         run: npm run react-build
 
-      - name: Remove public folder
-        run: rm -rf public
-
       - name: Build with Electron Forge
         run: npm run make
 
