@@ -1,5 +1,6 @@
 {
   "name": "quest-logs",
+  "productName": "Quest Logs",
   "version": "1.0.0",
   "description": "An RPG-inspired to-do list app.",
   "main": "main.js",

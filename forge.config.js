@@ -6,6 +6,9 @@ module.exports = {
     asar: true,
     "extraFiles": [
       "build"
+    ],
+    ignore: [
+      /^\/public($|\/)/
     ]
   },
   rebuildConfig: {},
