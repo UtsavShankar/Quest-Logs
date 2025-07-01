@@ -19,6 +19,7 @@ import TodoItem from "./TodoItem";
 import TagPicker from "./Tags";
 import SettingsMenu from "./Settings";
 import { SettingsButton, SimpleButton } from "./Buttons";
+import TabList from "./TabList"
 
 export default function TodoList({ user, settings, setSettings }) {
   const [todos, setTodos] = useState([]);
@@ -108,37 +109,43 @@ export default function TodoList({ user, settings, setSettings }) {
 
   return (
     <div>
-      <div style={{ padding: '20px' }}>
+      <div style={{ padding: '1rem', height: '100vh', boxSizing: "border-box", display: "flex", flexDirection: "column" }}>
         <div style={{display: 'flex', justifyContent: 'space-between'}}>
           <SettingsButton onClick={() => setSettingsOpen(true)} />
           <SimpleButton onClick={handleLogout}>Log out</SimpleButton>
         </div>
         <h1 style={{textAlign: 'center'}}>Quest Log</h1>
         <br />
-        <DndContext onDragEnd={handleDragEnd} sensors={sensors} modifiers={[restrictToVerticalAxis]}>
-          <SortableContext items={todos}>
-            <ul style={{listStyleType: "none"}}>
-              {todos.map((todo) => (
-                <TodoItem key={todo.id} todo={todo} onUpdate={updateTodo} onDelete={deleteTodo} />
-              ))}
-            </ul>
-          </SortableContext>
-        </DndContext>
-        <div style={{ width: '80%', left: '10%', position: 'relative', display: 'grid', gridTemplateColumns: "1fr 100px 110px 150px auto", gap: '8px', alignItems: 'center'}}>
-          <input className="text-input" value={newTask} placeholder="Enter new quest" onChange={(e) => setNewTask(e.target.value)} />
-          {
-            !isAddingTag
-            ? tag
-              ? <span className="tag" onClick={() => setIsAddingTag(true)}>{tag.name}</span>
-              : <SimpleButton onClick={() => setIsAddingTag(true)}>Add Tag</SimpleButton>
-            : <TagPicker userId={user.uid} editTag={tag} onUpdate={newTag => setTag(newTag)} endEdit={() => setIsAddingTag(false)}/>
-          }
-          {
-            !isAddingDate
-            ? <SimpleButton value={tag || ""} onClick={() => setIsAddingDate(true)}>Add Date</SimpleButton>
-            : <input type="date" value={deadline || ""} onChange={(e) => setDeadline(e.target.value)}/>
-          }
-          <button onClick={addTodo}>Add Quest</button>
+        <div style={{ display: 'flex', justifyContent: 'center', gap: '2rem', flex: 1, margin: '2rem 2rem 2rem' }}>
+          <TabList />
+          <div className="quest-list">
+            <DndContext onDragEnd={handleDragEnd} sensors={sensors} modifiers={[restrictToVerticalAxis]}>
+              <SortableContext items={todos}>
+                <ul style={{listStyleType: "none", margin: 0, padding: 0 }}>
+                  {todos.map((todo) => (
+                    <TodoItem key={todo.id} todo={todo} onUpdate={updateTodo} onDelete={deleteTodo} />
+                  ))}
+                </ul>
+              </SortableContext>
+            </DndContext>
+            <br />
+            <div style={{ position: 'relative', display: 'grid', gridTemplateColumns: "1fr 100px 110px 150px auto", gap: '8px', alignItems: 'center'}}>
+              <input className="text-input" value={newTask} placeholder="Enter new quest" onChange={(e) => setNewTask(e.target.value)} />
+              {
+                !isAddingTag
+                ? tag
+                  ? <span className="tag" onClick={() => setIsAddingTag(true)}>{tag.name}</span>
+                  : <SimpleButton onClick={() => setIsAddingTag(true)}>Add Tag</SimpleButton>
+                : <TagPicker userId={user.uid} editTag={tag} onUpdate={newTag => setTag(newTag)} endEdit={() => setIsAddingTag(false)}/>
+              }
+              {
+                !isAddingDate
+                ? <SimpleButton value={tag || ""} onClick={() => setIsAddingDate(true)}>Add Date</SimpleButton>
+                : <input type="date" value={deadline || ""} onChange={(e) => setDeadline(e.target.value)}/>
+              }
+              <button onClick={addTodo}>Add Quest</button>
+            </div>
+          </div>
         </div>
       </div>
       {

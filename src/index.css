@@ -23,7 +23,7 @@ button {
 }
 
 input {
-  outline:none
+  outline:none;
 }
 
 input[type="date"] {
@@ -76,7 +76,15 @@ input[type="range"]::-webkit-slider-thumb {
   cursor: pointer;
 }
 
-.text-input {
+input:not([type]), input[type="text"]
+{
+  border: solid gray 1px;
+  padding: 2px 8px 2px;
+  box-sizing: border-box;
+  width: 100%;
+}
+
+input.text-input {
   background-color: rgba(0, 0, 0, 0.75);
   border: 1px solid #7C643C;
   padding: 2px 8px 2px;
@@ -255,6 +263,30 @@ input[type="range"]::-webkit-slider-thumb {
   height: 3px;
   width: 3px;
   border-radius: 50%;
+}
+
+.quest-list {
+  background: rgba(0, 0, 0, 0.75);
+  padding: 1rem;
+  border: solid gray 1px;
+}
+
+.tab-list {
+  width: 10rem;
+  background: rgba(0, 0, 0, 0.75);
+  padding: 1rem;
+  border: solid gray 1px;
+}
+
+.add-button {
+  font-size: 1em;
+  height: 1.5em;
+  width: 1.5em;
+  border: none;
+}
+
+.add-button:hover {
+  color: var(--highlight-color);
 }
 
 code {

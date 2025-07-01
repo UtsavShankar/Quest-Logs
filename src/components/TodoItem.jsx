@@ -93,7 +93,7 @@ export default function TodoItem({ todo, onUpdate, onDelete }) {
     <li ref={setNodeRef} style={{display: "grid", gridTemplateColumns: "25px auto 25px", alignItems: "center", ...style}} {...attributes}>
       <input type="checkbox"/>
       {isEditing ? (
-        <div style={{ position: 'relative', display: 'grid', gridTemplateColumns: "1fr 100px 110px 150px auto", gap: '8px', alignItems: 'center'}}>
+        <div style={{ position: 'relative', display: 'grid', gridTemplateColumns: "2fr 0.7fr 1fr 1fr auto", gap: '8px', alignItems: 'center'}}>
           <input value={editVal} onChange={(e) => setEditVal(e.target.value)}/>
           {
             isEditingTag
@@ -121,7 +121,7 @@ export default function TodoItem({ todo, onUpdate, onDelete }) {
           </div>
         </div>
       ) : (
-        <div style={{ display: 'grid', gridTemplateColumns: "1fr 100px 110px 150px auto", gap: '8px', alignItems: 'left'}}>
+        <div style={{ display: 'grid', gridTemplateColumns: "2fr 0.7fr 1fr 1fr auto", gap: '8px', alignItems: 'left'}}>
           <div style={{ display: 'contents', cursor: 'default' }} {...listeners}>
           <span>{todo.title}</span>
           <span>{(todo.tags && todo.tags[0]) ? todo.tags[0].name : ""}</span>
@@ -133,7 +133,7 @@ export default function TodoItem({ todo, onUpdate, onDelete }) {
           })
             : ""
           }</span>
-          <span>{daysRemaining}</span>
+          <span style={{ whiteSpace: 'pre' }}>{daysRemaining}</span>
           </div>
           <div>
             <SimpleButton onClick={() => {setIsEditing(true); console.log("editing")}}>Edit</SimpleButton>
