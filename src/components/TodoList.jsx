@@ -5,7 +5,8 @@ import {
   collection,
   addDoc,
   query,
-  where,
+  onSnapshot,
+  getDoc,
   getDocs,
   deleteDoc,
   doc,
@@ -23,6 +24,7 @@ import TabList from "./TabList"
 
 export default function TodoList({ user, settings, setSettings }) {
   const [todos, setTodos] = useState([]);
+  const [userTags, setUserTags] = useState([]);
   const [newTask, setNewTask] = useState("");
   const sensors = useSensors(
     useSensor(PointerSensor)
@@ -32,32 +34,70 @@ export default function TodoList({ user, settings, setSettings }) {
   const [isAddingDate, setIsAddingDate] = useState(false);
   const [deadline, setDeadline] = useState(null);
   const [settingsOpen, setSettingsOpen] = useState(false);
+  const [userLists, setUserLists] = useState([]);
 
   const loadTodos = useCallback(async () => {
     if (!user) return;
     const q = query(
-      collection(db, "todos"), 
-      where("userId", "==", user.uid),
+      collection(db, "users", user.uid, "todos"),
       orderBy("sortOrder", "asc")
     );
-    const snapshot = await getDocs(q);
-    const items = snapshot.docs.map(docSnap => ({
-      id: docSnap.id,
-      ...docSnap.data()
-    }));
-    setTodos(items);
+    
+    const unsubscribe = onSnapshot(q, snapshot => {
+      const items = snapshot.docs.map(docSnap => ({
+        id: docSnap.id,
+        ...docSnap.data()
+      }));
+      setTodos(items);
+    });
+
+    return () => unsubscribe();
   }, [user]);
 
   useEffect(() => {
     loadTodos();
   }, [loadTodos]);
 
+  const loadSubCollection = useCallback(async (subcollection) => {
+    const q = query(
+        collection(db, "users", user.uid, subcollection)
+    );
+    const snapshot = await getDocs(q);
+    return snapshot.docs.map(doc => ({ 
+        docId: doc.id,
+        ...doc.data()
+    }));
+  }, [user.uid]);
+
+  const loadUserTags = useCallback(async () => {
+    const items = (await loadSubCollection("tags")).map(doc => ({
+      id: doc.docId,
+      name: doc.name
+    }));
+    setUserTags(items);
+  }, [loadSubCollection]);
+
+  useEffect(() => {
+      loadUserTags();
+  }, [loadUserTags]);
+
+  const loadQuestLists = useCallback(async () => {
+    const items = (await loadSubCollection("lists")).map(doc => ({ 
+        id: doc.docId,
+        name: doc.name
+    }));
+    setUserLists(items);
+  }, [loadSubCollection]);
+
+  useEffect(() => {
+      loadQuestLists();
+  }, [loadQuestLists]);
+
   const addTodo = async () => {
     if (!newTask.trim()) return;
-    await addDoc(collection(db, "todos"), {
+    await addDoc(collection(db, "users", user.uid, "todos"), {
       title: newTask,
       completed: false,
-      userId: user.uid,
       createdAt: Date.now(),
       sortOrder: todos.length,
       deadline: deadline,
@@ -71,19 +111,25 @@ export default function TodoList({ user, settings, setSettings }) {
     loadTodos();
   };
 
-  const updateTodo = async (id, newTitle, newTag, newDeadline) => {
-    await updateDoc(doc(db, "todos", id), { 
+  const updateTodo = async (id, newTitle, newTagId, newDeadline) => {
+    await updateDoc(doc(db, "users", user.uid, "todos", id), { 
       title: newTitle,
-      tags: newTag ? [newTag] : [],
+      tags: newTagId ? [newTagId] : [],
       deadline: newDeadline,
     });
     loadTodos();
   };
 
   const deleteTodo = async (id) => {
-    await deleteDoc(doc(db, "todos", id));
+    await deleteDoc(doc(db, "users", user.uid, "todos", id));
     loadTodos();
   };
+
+  const toggleCompleted = async (id, completed) => {
+    await updateDoc(doc(db, "users", user.uid, "todos", id), {
+      completed: completed
+    });
+  }
 
   const handleLogout = async () => {
     await signOut(auth);
@@ -102,10 +148,39 @@ export default function TodoList({ user, settings, setSettings }) {
 
     await Promise.all(
       newTodos.map((todo, index) =>
-        updateDoc(doc(db, "todos", todo.id), { sortOrder: index })
+        updateDoc(doc(db, "users", user.uid, "todos", todo.id), { sortOrder: index })
       )
     );
   };
+
+  const addTag = async (tagName) => {
+    await addDoc(collection(db, "users", user.uid, "tags"), { name: tagName });
+    loadUserTags();
+  }
+
+  const deleteTag = async (tagId) => {
+    const docRef = doc(db, "users", user.uid, "tags", tagId);
+    await deleteDoc(docRef);
+    loadUserTags();
+  }
+
+  const updateTag = async (tagId, newName) => {
+    await updateDoc(doc(db, "users", user.uid, "tags", tagId), { 
+      name: newName
+    });
+    loadUserTags();
+  }
+
+  const addList = async (listName) => {
+    await addDoc(collection(db, "users", user.uid, "lists"), { name: listName });
+    loadQuestLists();
+  }
+
+  const deleteList = async (listId) => {
+    const docRef = doc(db, "users", user.uid, "lists", listId);
+    await deleteDoc(docRef);
+    loadQuestLists();
+  }
 
   return (
     <div>
@@ -117,13 +192,19 @@ export default function TodoList({ user, settings, setSettings }) {
         <h1 style={{textAlign: 'center'}}>Quest Log</h1>
         <br />
         <div style={{ display: 'flex', justifyContent: 'center', gap: '2rem', flex: 1, margin: '2rem 2rem 2rem' }}>
-          <TabList />
+          <TabList userTabs={userLists} addUserTab={addList} deleteUserTab={deleteList}/>
           <div className="quest-list">
             <DndContext onDragEnd={handleDragEnd} sensors={sensors} modifiers={[restrictToVerticalAxis]}>
               <SortableContext items={todos}>
                 <ul style={{listStyleType: "none", margin: 0, padding: 0 }}>
                   {todos.map((todo) => (
-                    <TodoItem key={todo.id} todo={todo} onUpdate={updateTodo} onDelete={deleteTodo} />
+                    <TodoItem 
+                      key={todo.id} 
+                      todo={todo}
+                      tagProps={{ userTags, addTag, deleteTag, updateTag }}
+                      onUpdate={updateTodo} 
+                      onDelete={deleteTodo} 
+                      setIsCompleted={completed => toggleCompleted(todo.id, completed)} />
                   ))}
                 </ul>
               </SortableContext>
@@ -136,7 +217,7 @@ export default function TodoList({ user, settings, setSettings }) {
                 ? tag
                   ? <span className="tag" onClick={() => setIsAddingTag(true)}>{tag.name}</span>
                   : <SimpleButton onClick={() => setIsAddingTag(true)}>Add Tag</SimpleButton>
-                : <TagPicker userId={user.uid} editTag={tag} onUpdate={newTag => setTag(newTag)} endEdit={() => setIsAddingTag(false)}/>
+                : <TagPicker userId={user.uid} editTag={tag} tagProps={{ userTags, addTag, deleteTag, updateTag }} onUpdate={newTag => setTag(newTag)} endEdit={() => setIsAddingTag(false)}/>
               }
               {
                 !isAddingDate

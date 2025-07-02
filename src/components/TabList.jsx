@@ -1,7 +1,8 @@
-import { useState, useRef, useEffect } from "react";
+import { useState, useRef, useEffect, useMemo } from "react";
+import { SimpleButton } from "./Buttons";
 
-export default function TabList() {
-    const defaultTabs = [
+export default function TabList({ userTabs, addUserTab, deleteUserTab }) {
+    const defaultTabs = useMemo(() => [
         {
             id: "all",
             name: "All",
@@ -12,11 +13,15 @@ export default function TabList() {
             name: "Completed",
             canEdit: false
         }
-    ]
+    ], []);
 
     const [currentTab, setCurrentTab] = useState("all");
     const [isAddingTab, setIsAddingTab] = useState(false);
-    const [tabs, setTabs] = useState(defaultTabs);
+    const [tabs, setTabs] = useState([]);
+
+    useEffect(() => {
+        setTabs([...defaultTabs, ...userTabs.map(tab => ({ ...tab, canEdit: true }))]);
+    }, [defaultTabs, userTabs])
 
     const addTab = (name) => {
         setTabs([
@@ -27,7 +32,15 @@ export default function TabList() {
                 canEdit: true
             }
         ]);
+        addUserTab(name);
         setIsAddingTab(false);
+    }
+
+    const deleteTab = (tabId) => {
+        if (currentTab === tabId) {
+            setCurrentTab("all");
+        }
+        deleteUserTab(tabId);
     }
 
     function AddTabButton() {
@@ -67,12 +80,16 @@ export default function TabList() {
         <div className="tab-list">
             <div className="side-bar">
                 {tabs.map((tab) => 
-                    <button 
-                        className={`side-button ${currentTab === tab.id && "selected"}`}
-                        style={{ textAlign: "left" }}
-                        onClick={() => setCurrentTab(tab.id)}>
-                            {tab.name}
-                    </button>)}
+                    <div style={{ textAlign: "left", display: "flex", justifyContent: "space-between" }}>
+                        <button 
+                            key={tab.id}
+                            className={`side-button ${currentTab === tab.id && "selected"}`}
+                            style={{ textAlign: "left"}}
+                            onClick={() => setCurrentTab(tab.id)}>
+                                {tab.name}
+                        </button>
+                        {tab.canEdit && <SimpleButton onClick={() => deleteTab(tab.id)}>Delete</SimpleButton>}
+                    </div>)}
                 <AddTabButton />
             </div>
         </div>

@@ -4,7 +4,7 @@ import { CSS } from "@dnd-kit/utilities";
 import TagPicker from "./Tags";
 import { SimpleButton } from "./Buttons";
 
-export default function TodoItem({ todo, onUpdate, onDelete }) {
+export default function TodoItem({ todo, tagProps, onUpdate, onDelete, setIsCompleted }) {
   const [isEditing, setIsEditing] = useState(false);
   const [editVal, setEditVal] = useState(todo.title);
   const {attributes, listeners, setNodeRef, transform, transition} = useSortable({
@@ -16,8 +16,19 @@ export default function TodoItem({ todo, onUpdate, onDelete }) {
     transition,
     padding: '3px'
   };
+
+  const { userTags } = tagProps;
+
+  const getTag = () => {
+    const tagId = todo.tags?.[0];
+    const tagData = userTags.find(tag => tag.id === tagId);
+    const tag = tagId && tagData ? { id: tagId, name: tagData.name } : null;
+    return tag;
+  }
+  
+  const [editTag, setEditTag] = useState(getTag());
   const [isEditingTag, setIsEditingTag] = useState(false);
-  const [editTag, setEditTag] = useState(todo.tags ? todo.tags[0] : null);
+
   const [editDeadline, setEditDeadline] = useState(todo.deadline ?? "");
   const [isAddingDate, setIsAddingDate] = useState(false);
 
@@ -63,7 +74,7 @@ export default function TodoItem({ todo, onUpdate, onDelete }) {
   })();
 
   const save = () => {
-    onUpdate(todo.id, editVal, editTag, editDeadline);
+    onUpdate(todo.id, editVal, editTag.id, editDeadline);
     setIsEditing(false);
     setIsEditingTag(false);
   };
@@ -71,7 +82,7 @@ export default function TodoItem({ todo, onUpdate, onDelete }) {
   const cancel = () => {
     setIsEditing(false);
     setIsEditingTag(false);
-    setEditTag(todo.tags && todo.tags[0] ? todo.tags[0] : null);
+    setEditTag(getTag());
   }
 
   function DragHandle({ listeners }) {
@@ -91,7 +102,7 @@ export default function TodoItem({ todo, onUpdate, onDelete }) {
 
   return (
     <li ref={setNodeRef} style={{display: "grid", gridTemplateColumns: "25px auto 25px", alignItems: "center", ...style}} {...attributes}>
-      <input type="checkbox"/>
+      <input type="checkbox" checked={todo.completed} onChange={e => setIsCompleted(e.target.checked)}/>
       {isEditing ? (
         <div style={{ position: 'relative', display: 'grid', gridTemplateColumns: "2fr 0.7fr 1fr 1fr auto", gap: '8px', alignItems: 'center'}}>
           <input value={editVal} onChange={(e) => setEditVal(e.target.value)}/>
@@ -99,6 +110,7 @@ export default function TodoItem({ todo, onUpdate, onDelete }) {
             isEditingTag
             ? <TagPicker 
                 userId={todo.userId} 
+                tagProps={tagProps}
                 editTag={editTag}
                 onUpdate={newTag => setEditTag(newTag)} 
                 endEdit={() => setIsEditingTag(false)}
@@ -124,7 +136,7 @@ export default function TodoItem({ todo, onUpdate, onDelete }) {
         <div style={{ display: 'grid', gridTemplateColumns: "2fr 0.7fr 1fr 1fr auto", gap: '8px', alignItems: 'left'}}>
           <div style={{ display: 'contents', cursor: 'default' }} {...listeners}>
           <span>{todo.title}</span>
-          <span>{(todo.tags && todo.tags[0]) ? todo.tags[0].name : ""}</span>
+          <span>{editTag && editTag.name}</span>
           <span>{todo.deadline
             ? new Date(todo.deadline).toLocaleDateString("en-US", {
               year: "numeric",

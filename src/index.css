@@ -76,7 +76,7 @@ input[type="range"]::-webkit-slider-thumb {
   cursor: pointer;
 }
 
-input:not([type]), input[type="text"]
+input:not([type]), input[type="text"], input[type="password"]
 {
   border: solid gray 1px;
   padding: 2px 8px 2px;
@@ -114,7 +114,7 @@ input.text-input {
   padding: 0.3rem;
 }
 
-.tag-search-input {
+input.tag-search-input {
   flex: 1;
   background-color: transparent;
   border: none;
@@ -283,6 +283,7 @@ input.text-input {
   height: 1.5em;
   width: 1.5em;
   border: none;
+  background: none;
 }
 
 .add-button:hover {
