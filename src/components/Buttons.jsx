@@ -34,8 +34,8 @@ export function SettingsButton({ onClick }) {
     )
 }
 
-export function SimpleButton({ onClick, children}) {
+export function SimpleButton({ onClick, children, style }) {
     return (
-        <button className="simple-button" onClick={onClick}>{children}</button>
+        <button style={style} className="simple-button" onClick={onClick}>{children}</button>
     )
 }

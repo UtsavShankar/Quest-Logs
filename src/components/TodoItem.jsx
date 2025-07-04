@@ -1,20 +1,14 @@
-import { useEffect, useState } from "react";
 import { useSortable } from "@dnd-kit/sortable";
 import { CSS } from "@dnd-kit/utilities";
-import TagPicker from "./Tags";
-import { SimpleButton } from "./Buttons";
 
-export default function TodoItem({ todo, tagProps, onUpdate, onDelete, setIsCompleted }) {
-  const [isEditing, setIsEditing] = useState(false);
-  const [editVal, setEditVal] = useState(todo.title);
+export default function TodoItem({ todo, tagProps, setIsCompleted, onClick, isOpen }) {
   const {attributes, listeners, setNodeRef, transform, transition} = useSortable({
     id: todo.id,
   });
   
   const style = {
-    transform: CSS.Transform.toString(transform),
-    transition,
-    padding: '3px'
+    transform: CSS.Translate.toString(transform),
+    transition
   };
 
   const { userTags } = tagProps;
@@ -22,73 +16,23 @@ export default function TodoItem({ todo, tagProps, onUpdate, onDelete, setIsComp
   const getTag = () => {
     const tagId = todo.tags?.[0];
     const tagData = userTags.find(tag => tag.id === tagId);
-    const tag = tagId && tagData ? { id: tagId, name: tagData.name } : null;
-    return tag;
+    return tagId && tagData ? tagData.name : null;
   }
-  
-  const [editTag, setEditTag] = useState(getTag());
-  const [isEditingTag, setIsEditingTag] = useState(false);
 
-  const [editDeadline, setEditDeadline] = useState(todo.deadline ?? "");
-  const [isAddingDate, setIsAddingDate] = useState(false);
+  const getDaysRemaining = (deadline) => {
+    if (!deadline) return "";
 
-  // setting timeout for when the deadline expires, reloads every time deadline value is updated, pretty efficient
-  useEffect(() => {
-    if (todo.deadline) {
-      const deadlineDate = new Date(todo.deadline);
-      const now = new Date();
-      const timeout = deadlineDate.getTime() - now.getTime();
-
-      console.log("Timeout for deadline:", timeout, now, deadlineDate);
-
-      if (timeout > 0) {
-        let timer;
-        const scheduleNotification = () => {
-          timer = setTimeout(() => {
-                new window.Notification(todo.title, { body: "Your quest has expired! You made a valiant effort!" });         
-              }, timeout); // 5 second for testing, change to timeout for deadline
-        }
-
-        if (Notification.permission === "granted") {
-          scheduleNotification();
-        } else if (Notification.permission !== "denied") {
-          Notification.requestPermission().then(permission => {
-            if (permission === "granted") {
-              scheduleNotification();
-            }
-          });
-        }
-        return () => clearTimeout(timer);
-      }
-    }
-  // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [editDeadline]);
-
-  const daysRemaining = (() => {
-    if (!todo.deadline) return "";
-
-    const milisBetween = new Date(todo.deadline) - new Date();
+    const milisBetween = new Date(deadline) - new Date();
     const daysBetween = Math.ceil(milisBetween / (1000 * 60 * 60 * 24));
 
-    return `${daysBetween} day${daysBetween === 1 ? "" : "s"} remaining`;
-  })();
-
-  const save = () => {
-    onUpdate(todo.id, editVal, editTag.id, editDeadline);
-    setIsEditing(false);
-    setIsEditingTag(false);
+    return `${daysBetween} day${daysBetween === 1 ? "" : "s"}`;
   };
-
-  const cancel = () => {
-    setIsEditing(false);
-    setIsEditingTag(false);
-    setEditTag(getTag());
-  }
 
   function DragHandle({ listeners }) {
     return (
       <div style={{display: "flex", justifyContent: "center"}}>
-        <div style={{display:"grid", gridTemplateColumns: "3px 3px", gridGap: "3px", cursor: "grab"}} {...listeners}>
+        <div style={{display: "grid", gridTemplateColumns: "3px 3px", gridGap: "3px", cursor: "grab"}}
+          {...listeners}>
           <div className="dot" />
           <div className="dot" />
           <div className="dot" />
@@ -101,59 +45,20 @@ export default function TodoItem({ todo, tagProps, onUpdate, onDelete, setIsComp
   }
 
   return (
-    <li ref={setNodeRef} style={{display: "grid", gridTemplateColumns: "25px auto 25px", alignItems: "center", ...style}} {...attributes}>
+    <li ref={setNodeRef} className={`todo-item ${isOpen && "selected"}`} style={style} {...attributes} onClick={onClick}>
       <input type="checkbox" checked={todo.completed} onChange={e => setIsCompleted(e.target.checked)}/>
-      {isEditing ? (
-        <div style={{ position: 'relative', display: 'grid', gridTemplateColumns: "2fr 0.7fr 1fr 1fr auto", gap: '8px', alignItems: 'center'}}>
-          <input value={editVal} onChange={(e) => setEditVal(e.target.value)}/>
-          {
-            isEditingTag
-            ? <TagPicker 
-                userId={todo.userId} 
-                tagProps={tagProps}
-                editTag={editTag}
-                onUpdate={newTag => setEditTag(newTag)} 
-                endEdit={() => setIsEditingTag(false)}
-              />
-            : editTag
-              ? <span onClick={() => setIsEditingTag(true)}>{editTag.name}</span>
-              : <SimpleButton onClick={() => setIsEditingTag(true)}>Add Tag</SimpleButton>
-          }
-          {
-            todo.deadline
-            ? <input type="date" value={editDeadline} onChange={(e) => setEditDeadline(e.target.value)}/>
-            : !isAddingDate
-              ? <SimpleButton onClick={() => setIsAddingDate(true)}>Add Date</SimpleButton>
-              : <input type="date" value={editDeadline || ""} onChange={(e) => setEditDeadline(e.target.value)}/>
-          }
-          <div/>
-          <div>
-            <SimpleButton onClick={save}>Save</SimpleButton>
-            <SimpleButton onClick={cancel}>Cancel</SimpleButton>
+        <div>
+          <div style={{ display: 'grid', gridTemplateColumns: '1fr 3rem auto', gap: '8px', alignItems: 'left'}}>
+            <div style={{ display: 'contents', cursor: 'pointer' }} {...listeners}>
+            <span>{todo.title}</span>
+            <span>{getTag()}</span>
+            </div>
           </div>
         </div>
-      ) : (
-        <div style={{ display: 'grid', gridTemplateColumns: "2fr 0.7fr 1fr 1fr auto", gap: '8px', alignItems: 'left'}}>
-          <div style={{ display: 'contents', cursor: 'default' }} {...listeners}>
-          <span>{todo.title}</span>
-          <span>{editTag && editTag.name}</span>
-          <span>{todo.deadline
-            ? new Date(todo.deadline).toLocaleDateString("en-US", {
-              year: "numeric",
-              month: "long",
-              day: "numeric"
-          })
-            : ""
-          }</span>
-          <span style={{ whiteSpace: 'pre' }}>{daysRemaining}</span>
-          </div>
-          <div>
-            <SimpleButton onClick={() => {setIsEditing(true); console.log("editing")}}>Edit</SimpleButton>
-            <SimpleButton onClick={() => onDelete(todo.id)}>Delete</SimpleButton>
-          </div>
-        </div>
-      )}
       <DragHandle listeners={listeners}/>
+      <span style={{ color: "gray", fontSize: "14px", gridColumn: "2 / -1", cursor: "pointer" }}>
+        {getDaysRemaining(todo.deadline)}
+      </span>
     </li>
   );
 }

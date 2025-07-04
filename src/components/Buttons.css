@@ -55,6 +55,7 @@
     background: none;
     border: none;
     text-shadow: 0 0 4px black;
+    padding: 0;
 }
 
 .simple-button:hover {

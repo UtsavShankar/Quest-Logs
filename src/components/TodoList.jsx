@@ -6,7 +6,6 @@ import {
   addDoc,
   query,
   onSnapshot,
-  getDoc,
   getDocs,
   deleteDoc,
   doc,
@@ -21,20 +20,26 @@ import TagPicker from "./Tags";
 import SettingsMenu from "./Settings";
 import { SettingsButton, SimpleButton } from "./Buttons";
 import TabList from "./TabList"
+import QuestDetailsPanel from "./QuestDetailsPanel.jsx";
 
 export default function TodoList({ user, settings, setSettings }) {
   const [todos, setTodos] = useState([]);
   const [userTags, setUserTags] = useState([]);
   const [newTask, setNewTask] = useState("");
   const sensors = useSensors(
-    useSensor(PointerSensor)
-  );
+    useSensor(PointerSensor, {
+      activationConstraint: {
+        distance: 5
+      }
+    }
+  ));
   const [isAddingTag, setIsAddingTag] = useState(false);
   const [tag, setTag] = useState(null);
   const [isAddingDate, setIsAddingDate] = useState(false);
   const [deadline, setDeadline] = useState(null);
   const [settingsOpen, setSettingsOpen] = useState(false);
   const [userLists, setUserLists] = useState([]);
+  const [openQuest, setOpenQuest] = useState(null);
 
   const loadTodos = useCallback(async () => {
     if (!user) return;
@@ -112,7 +117,8 @@ export default function TodoList({ user, settings, setSettings }) {
   };
 
   const updateTodo = async (id, newTitle, newTagId, newDeadline) => {
-    await updateDoc(doc(db, "users", user.uid, "todos", id), { 
+    console.log(`updated ${newTitle}: ${newTagId}, ${newDeadline}`);
+     await updateDoc(doc(db, "users", user.uid, "todos", id), { 
       title: newTitle,
       tags: newTagId ? [newTagId] : [],
       deadline: newDeadline,
@@ -123,6 +129,7 @@ export default function TodoList({ user, settings, setSettings }) {
   const deleteTodo = async (id) => {
     await deleteDoc(doc(db, "users", user.uid, "todos", id));
     loadTodos();
+    setOpenQuest(null);
   };
 
   const toggleCompleted = async (id, completed) => {
@@ -184,49 +191,66 @@ export default function TodoList({ user, settings, setSettings }) {
 
   return (
     <div>
-      <div style={{ padding: '1rem', height: '100vh', boxSizing: "border-box", display: "flex", flexDirection: "column" }}>
+      <div style={{ padding: '1rem', minHeight: '45rem', boxSizing: "border-box", display: "flex", flexDirection: "column" }}>
         <div style={{display: 'flex', justifyContent: 'space-between'}}>
           <SettingsButton onClick={() => setSettingsOpen(true)} />
           <SimpleButton onClick={handleLogout}>Log out</SimpleButton>
         </div>
         <h1 style={{textAlign: 'center'}}>Quest Log</h1>
         <br />
-        <div style={{ display: 'flex', justifyContent: 'center', gap: '2rem', flex: 1, margin: '2rem 2rem 2rem' }}>
+        <div style={{ display: 'flex', justifyContent: 'center', gap: '1rem', flex: 1, margin: '2rem 2rem 2rem' }}>
           <TabList userTabs={userLists} addUserTab={addList} deleteUserTab={deleteList}/>
           <div className="quest-list">
             <DndContext onDragEnd={handleDragEnd} sensors={sensors} modifiers={[restrictToVerticalAxis]}>
               <SortableContext items={todos}>
-                <ul style={{listStyleType: "none", margin: 0, padding: 0 }}>
+                <ul style={{listStyleType: "none", margin: 0, padding: 0}}>
                   {todos.map((todo) => (
-                    <TodoItem 
+                    <TodoItem
                       key={todo.id} 
                       todo={todo}
                       tagProps={{ userTags, addTag, deleteTag, updateTag }}
                       onUpdate={updateTodo} 
                       onDelete={deleteTodo} 
-                      setIsCompleted={completed => toggleCompleted(todo.id, completed)} />
+                      setIsCompleted={completed => toggleCompleted(todo.id, completed)} 
+                      onClick={() => setOpenQuest(todo)}
+                      isOpen={openQuest && openQuest.id === todo.id}
+                    />
                   ))}
                 </ul>
               </SortableContext>
             </DndContext>
             <br />
-            <div style={{ position: 'relative', display: 'grid', gridTemplateColumns: "1fr 100px 110px 150px auto", gap: '8px', alignItems: 'center'}}>
+            <div style={{ position: 'relative', display: 'grid', gridTemplateColumns: "1fr auto", gap: '8px', alignItems: 'center', margin: "0 1em 0"}}>
               <input className="text-input" value={newTask} placeholder="Enter new quest" onChange={(e) => setNewTask(e.target.value)} />
-              {
-                !isAddingTag
-                ? tag
-                  ? <span className="tag" onClick={() => setIsAddingTag(true)}>{tag.name}</span>
-                  : <SimpleButton onClick={() => setIsAddingTag(true)}>Add Tag</SimpleButton>
-                : <TagPicker userId={user.uid} editTag={tag} tagProps={{ userTags, addTag, deleteTag, updateTag }} onUpdate={newTag => setTag(newTag)} endEdit={() => setIsAddingTag(false)}/>
-              }
-              {
-                !isAddingDate
-                ? <SimpleButton value={tag || ""} onClick={() => setIsAddingDate(true)}>Add Date</SimpleButton>
-                : <input type="date" value={deadline || ""} onChange={(e) => setDeadline(e.target.value)}/>
-              }
               <button onClick={addTodo}>Add Quest</button>
             </div>
+            <div style={{ display: "flex", gap: "1em", margin: "0.5em 1em 0.5em", position: "relative"}}>
+              <span>
+                {
+                  !isAddingTag
+                  ? tag
+                    ? <span className="tag" onClick={() => setIsAddingTag(true)}>{tag.name}</span>
+                    : <SimpleButton onClick={() => setIsAddingTag(true)}>Add Tag</SimpleButton>
+                  : <TagPicker userId={user.uid} editTag={tag} tagProps={{ userTags, addTag, deleteTag, updateTag }} onUpdate={newTag => setTag(newTag)} endEdit={() => setIsAddingTag(false)}/>
+                }
+              </span>
+              <span>
+                {
+                  !isAddingDate
+                  ? <SimpleButton value={tag || ""} onClick={() => setIsAddingDate(true)}>Add Date</SimpleButton>
+                  : <input type="date" value={deadline || ""} onChange={(e) => setDeadline(e.target.value)}/>
+                }
+              </span>
+            </div>
           </div>
+          {
+            openQuest && <QuestDetailsPanel 
+              quest={openQuest} 
+              tagProps={{ userTags, addTag, deleteTag, updateTag }}
+              onUpdate={updateTodo} 
+              onDelete={deleteTodo}
+            />
+          }
         </div>
       </div>
       {
