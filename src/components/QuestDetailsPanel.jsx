@@ -1,6 +1,7 @@
 import { useRef, useState, useEffect, useCallback } from "react";
 import TagPicker from "./Tags";
 import { SimpleButton } from "./Buttons";
+import DescriptionBox from "./DescriptionBox";
 
 export default function QuestDetailsPanel({ quest, onUpdate, onDelete, tagProps }) {
     const { userTags } = tagProps;
@@ -28,16 +29,20 @@ export default function QuestDetailsPanel({ quest, onUpdate, onDelete, tagProps 
                     day: "numeric"
                 })
                     : ""
+    
+    const [description, setDescription] = useState(quest.description);
 
     useEffect(() => {
         setTitle(quest.title);
         setTag(getTag());
         setDeadline(quest.deadline);
+        setDescription(quest.description);
     }, [getTag, quest]);
 
-    const updateTitle = (newTitle) => onUpdate(quest.id, newTitle, tag.id, deadline);
-    const updateTag = (newTag) => onUpdate(quest.id, quest.title, newTag.id, deadline);
-    const updateDeadline = (newDeadline) => onUpdate(quest.id, quest.title, tag.id, newDeadline);
+    const updateTitle = (newTitle) => onUpdate(quest.id, newTitle, tag.id, deadline, quest.description);
+    const updateTag = (newTag) => onUpdate(quest.id, quest.title, newTag.id, deadline, quest.description);
+    const updateDeadline = (newDeadline) => onUpdate(quest.id, quest.title, tag.id, newDeadline, quest.description);
+    const updateDescription = (newDescription) => onUpdate(quest.id, quest.title, tag.id, deadline, newDescription)
 
     function DatePicker() {
         const ref = useRef();
@@ -160,7 +165,7 @@ export default function QuestDetailsPanel({ quest, onUpdate, onDelete, tagProps 
 
     return(
         <div className="quest-details-panel">
-            <SimpleButton onClick={() => setDropdownIsShowing(!dropdownIsShowing)} style={{ float: "right", position: "relative" }}>
+            <SimpleButton onClick={() => setDropdownIsShowing(!dropdownIsShowing)} style={{ marginLeft: "auto", position: "relative" }}>
                 ...
                 {
                     dropdownIsShowing && <button 
@@ -178,6 +183,12 @@ export default function QuestDetailsPanel({ quest, onUpdate, onDelete, tagProps 
                 onKeyDown={handleTitleKeyDown}
             />
             <MetaRow/>
+            <div style={{ margin: "1em 0.3em 0.3em", flex: 1 }}>
+                <DescriptionBox 
+                    description={description}
+                    onUpdate={desc => updateDescription(desc)}
+                />
+            </div >
         </div>
     )
 }

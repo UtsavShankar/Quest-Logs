@@ -95,7 +95,7 @@ input.h2-input {
   background: none;
   border: none;
   outline: none;
-  margin: 1em 0 1em;
+  margin: 0 0 1em;
   padding: 0;
   text-align: center;
 }
@@ -300,6 +300,8 @@ input.tag-search-input {
   padding: 0.5rem 1rem 1rem;
   border: solid gray 1px;
   width: 20rem;
+  display: flex;
+  flex-direction: column;
 }
 
 .delete-button {
@@ -325,6 +327,55 @@ input.tag-search-input {
 
 .add-button:hover {
   color: var(--highlight-color);
+}
+
+::selection {
+  background: rgba(39, 108, 187, 0.5);
+}
+
+.tiptap {
+  outline: none;
+  margin: 0;
+
+  * {
+    margin: 0;
+  }
+
+  ul, ol {
+    padding-left: 2em;
+  }
+}
+
+.tiptap.ProseMirror {
+  height: 100%;
+  flex: 1;
+  overflow-y: auto;
+}
+
+.tiptap:focus {
+  outline: dotted 2px rgba(100, 100, 100, 0.5);
+}
+
+.bubble-menu {
+  background-color: rgba(50, 50, 50, 1);
+  padding: 0.2em;
+  border-radius: 0.5em;
+  box-shadow: 0 0 15px black;
+
+  button {
+    background: none;
+    border: none;
+    border-radius: 0.4em;
+    padding: 0.2em 0.4em 0.2em;
+
+    &:hover {
+      background-color: rgba(70, 70, 70, 1);
+    }
+
+    &.is-active {
+      color: var(--highlight-color);
+    }
+  }
 }
 
 code {

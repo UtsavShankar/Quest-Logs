@@ -106,7 +106,8 @@ export default function TodoList({ user, settings, setSettings }) {
       createdAt: Date.now(),
       sortOrder: todos.length,
       deadline: deadline,
-      tags: [tag]
+      tags: [tag],
+      description: ""
     });
     setNewTask("");
     setTag("");
@@ -116,12 +117,12 @@ export default function TodoList({ user, settings, setSettings }) {
     loadTodos();
   };
 
-  const updateTodo = async (id, newTitle, newTagId, newDeadline) => {
-    console.log(`updated ${newTitle}: ${newTagId}, ${newDeadline}`);
+  const updateTodo = async (id, newTitle, newTagId, newDeadline, newDescription) => {
      await updateDoc(doc(db, "users", user.uid, "todos", id), { 
       title: newTitle,
       tags: newTagId ? [newTagId] : [],
       deadline: newDeadline,
+      description: newDescription
     });
     loadTodos();
   };
