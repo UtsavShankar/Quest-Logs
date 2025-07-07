@@ -46,7 +46,7 @@ function EditMenu({ editor }) {
 export default function DescriptionBox({ description, onUpdate }) {
     const extensions = [StarterKit];
     const content = description || "";
-    
+
     const editor = useEditor({
         extensions: extensions,
         content: content
@@ -58,10 +58,20 @@ export default function DescriptionBox({ description, onUpdate }) {
         }
     }, [description, editor]);
 
-    editor.on('update', ({ editor }) => {
-        const html = editor.getHTML();
-        onUpdate(html);
-    });
+    useEffect(() => {
+        if (!editor) return;
+
+        const handler = () => {
+            const html = editor.getHTML();
+            onUpdate(html);
+        };
+
+        editor.on("update", handler);
+
+        return () => {
+            editor.off("update", handler);
+        };
+    }, [editor, onUpdate]);
 
     return (
         editor &&
