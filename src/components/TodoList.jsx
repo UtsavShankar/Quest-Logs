@@ -1,4 +1,4 @@
-import { useEffect, useState, useCallback, act } from "react";
+import { useEffect, useState, useCallback } from "react";
 import { db, auth } from "../firebase.js";
 import { signOut } from "firebase/auth";
 import {
@@ -14,7 +14,6 @@ import {
 } from "firebase/firestore";
 import { DndContext, PointerSensor, useSensor, useSensors} from "@dnd-kit/core";
 import { SortableContext, arrayMove } from "@dnd-kit/sortable";
-import { restrictToVerticalAxis } from "@dnd-kit/modifiers";
 import TodoItem from "./TodoItem";
 import TagPicker from "./Tags";
 import SettingsMenu from "./Settings";
@@ -48,14 +47,15 @@ export default function TodoList({ user, settings, setSettings }) {
       setShownTodos(todos);
     } else if (listId === "completed") {
       setShownTodos(todos.filter(t => t.completed === true));
+    } else {
+      setShownTodos(todos.filter(t => t.list === listId))
     }
-    console.log("list changed to ", listId);
     setActiveList(listId);
   }, [todos]);
 
-  useEffect(() =>
-    activateList(activeList)
-  , [activateList, activeList, todos]);
+  useEffect(() => {
+    activateList(activeList);
+  }, [activateList, activeList, todos]);
 
   const loadTodos = useCallback(async () => {
     if (!user) return;
@@ -116,15 +116,19 @@ export default function TodoList({ user, settings, setSettings }) {
 
   const addTodo = async () => {
     if (!newTask.trim()) return;
-    await addDoc(collection(db, "users", user.uid, "todos"), {
+    const item = {
       title: newTask,
       completed: false,
       createdAt: Date.now(),
       sortOrder: todos.length,
       deadline: deadline,
       tags: [tag],
-      description: ""
-    });
+      description: "",
+    };
+    if (activeList !== "all" && activeList !== "completed") {
+      item.list = activeList;
+    }
+    await addDoc(collection(db, "users", user.uid, "todos"), item);
     setNewTask("");
     setTag("");
     setDeadline(null);
@@ -165,17 +169,25 @@ export default function TodoList({ user, settings, setSettings }) {
     
     if (!over || active.id === over.id) return;
 
-    const oldIndex = todos.findIndex(t => t.id === active.id);
-    const newIndex = todos.findIndex(t => t.id === over.id);
-    const newTodos = arrayMove(todos, oldIndex, newIndex);
+    const newList = userLists.find(t => t.id === over.id);
 
-    setTodos(newTodos);
+    if (newList) {
+      // Move todo to list
+      moveTodoToList(active.id, over.id);
+    } else {
+      // Reorder todos
+      const oldIndex = todos.findIndex(t => t.id === active.id);
+      const newIndex = todos.findIndex(t => t.id === over.id);
+      const newTodos = arrayMove(todos, oldIndex, newIndex);
 
-    await Promise.all(
-      newTodos.map((todo, index) =>
-        updateDoc(doc(db, "users", user.uid, "todos", todo.id), { sortOrder: index })
-      )
-    );
+      setTodos(newTodos);
+
+      await Promise.all(
+        newTodos.map((todo, index) =>
+          updateDoc(doc(db, "users", user.uid, "todos", todo.id), { sortOrder: index })
+        )
+      );
+    }
   };
 
   const addTag = async (tagName) => {
@@ -197,8 +209,9 @@ export default function TodoList({ user, settings, setSettings }) {
   }
 
   const addList = async (listName) => {
-    await addDoc(collection(db, "users", user.uid, "lists"), { name: listName });
+    const docRef = await addDoc(collection(db, "users", user.uid, "lists"), { name: listName });
     loadQuestLists();
+    activateList(docRef.id);
   }
 
   const deleteList = async (listId) => {
@@ -207,69 +220,88 @@ export default function TodoList({ user, settings, setSettings }) {
     loadQuestLists();
   }
 
+  const moveTodoToList = async (todoId, listId) => {
+    await updateDoc(doc(db, "users", user.uid, "todos", todoId), {
+      list: listId
+    });
+    loadTodos();
+  }
+
+  function TopBar() {
+    return (
+      <div style={{display: 'flex', justifyContent: 'space-between'}}>
+        <SettingsButton onClick={() => setSettingsOpen(true)} />
+        <SimpleButton onClick={handleLogout}>Log out</SimpleButton>
+      </div>
+    )
+  }
+
+  function QuestList() {
+    return (
+      <div className="quest-list">
+          <SortableContext items={todos}>
+            <ul style={{listStyleType: "none", margin: 0, padding: 0}}>
+              {shownTodos.map((todo) => (
+                <TodoItem
+                  key={todo.id} 
+                  todo={todo}
+                  tagProps={{ userTags, addTag, deleteTag, updateTag }}
+                  onUpdate={updateTodo} 
+                  onDelete={deleteTodo} 
+                  onCompletedChange={completed => toggleCompleted(todo.id, completed)} 
+                  onClick={() => setOpenQuest(todo)}
+                  isOpen={openQuest && openQuest.id === todo.id}
+                />
+              ))}
+            </ul>
+          </SortableContext>
+        <br />
+        <div style={{ position: 'relative', display: 'grid', gridTemplateColumns: "1fr auto", gap: '8px', alignItems: 'center', margin: "0 1em 0"}}>
+          <input className="text-input" value={newTask} placeholder="Enter new quest" onChange={(e) => setNewTask(e.target.value)} />
+          <button onClick={addTodo}>Add Quest</button>
+        </div>
+        <div style={{ display: "flex", gap: "1em", margin: "0.5em 1em 0.5em", position: "relative"}}>
+          <span>
+            {
+              !isAddingTag
+              ? tag
+                ? <span className="tag" onClick={() => setIsAddingTag(true)}>{tag.name}</span>
+                : <SimpleButton onClick={() => setIsAddingTag(true)}>Add Tag</SimpleButton>
+              : <TagPicker userId={user.uid} editTag={tag} tagProps={{ userTags, addTag, deleteTag, updateTag }} onUpdate={newTag => setTag(newTag)} endEdit={() => setIsAddingTag(false)}/>
+            }
+          </span>
+          <span>
+            {
+              !isAddingDate
+              ? <SimpleButton value={tag || ""} onClick={() => setIsAddingDate(true)}>Add Date</SimpleButton>
+              : <input type="date" value={deadline || ""} onChange={(e) => setDeadline(e.target.value)}/>
+            }
+          </span>
+        </div>
+      </div>
+    )
+  }
+
   return (
     <div>
       <div style={{ padding: '1rem', minHeight: '45rem', boxSizing: "border-box", display: "flex", flexDirection: "column" }}>
-        <div style={{display: 'flex', justifyContent: 'space-between'}}>
-          <SettingsButton onClick={() => setSettingsOpen(true)} />
-          <SimpleButton onClick={handleLogout}>Log out</SimpleButton>
-        </div>
+        <TopBar />
         <h1 style={{textAlign: 'center'}}>Quest Log</h1>
         <br />
-        <div style={{ display: 'flex', justifyContent: 'center', gap: '1rem', flex: 1, margin: '2rem 2rem 2rem' }}>
-          <TabList userTabs={userLists} activateTab={activateList} addUserTab={addList} deleteUserTab={deleteList}/>
-          <div className="quest-list">
-            <DndContext onDragEnd={handleDragEnd} sensors={sensors} modifiers={[restrictToVerticalAxis]}>
-              <SortableContext items={todos}>
-                <ul style={{listStyleType: "none", margin: 0, padding: 0}}>
-                  {shownTodos.map((todo) => (
-                    <TodoItem
-                      key={todo.id} 
-                      todo={todo}
-                      tagProps={{ userTags, addTag, deleteTag, updateTag }}
-                      onUpdate={updateTodo} 
-                      onDelete={deleteTodo} 
-                      onCompletedChange={completed => toggleCompleted(todo.id, completed)} 
-                      onClick={() => setOpenQuest(todo)}
-                      isOpen={openQuest && openQuest.id === todo.id}
-                    />
-                  ))}
-                </ul>
-              </SortableContext>
-            </DndContext>
-            <br />
-            <div style={{ position: 'relative', display: 'grid', gridTemplateColumns: "1fr auto", gap: '8px', alignItems: 'center', margin: "0 1em 0"}}>
-              <input className="text-input" value={newTask} placeholder="Enter new quest" onChange={(e) => setNewTask(e.target.value)} />
-              <button onClick={addTodo}>Add Quest</button>
-            </div>
-            <div style={{ display: "flex", gap: "1em", margin: "0.5em 1em 0.5em", position: "relative"}}>
-              <span>
-                {
-                  !isAddingTag
-                  ? tag
-                    ? <span className="tag" onClick={() => setIsAddingTag(true)}>{tag.name}</span>
-                    : <SimpleButton onClick={() => setIsAddingTag(true)}>Add Tag</SimpleButton>
-                  : <TagPicker userId={user.uid} editTag={tag} tagProps={{ userTags, addTag, deleteTag, updateTag }} onUpdate={newTag => setTag(newTag)} endEdit={() => setIsAddingTag(false)}/>
-                }
-              </span>
-              <span>
-                {
-                  !isAddingDate
-                  ? <SimpleButton value={tag || ""} onClick={() => setIsAddingDate(true)}>Add Date</SimpleButton>
-                  : <input type="date" value={deadline || ""} onChange={(e) => setDeadline(e.target.value)}/>
-                }
-              </span>
-            </div>
+        <DndContext onDragEnd={handleDragEnd} sensors={sensors}>
+          <div style={{ display: 'flex', justifyContent: 'center', gap: '1rem', flex: 1, margin: '2rem 2rem 2rem' }}>
+            <TabList userTabs={userLists} currentTab={activeList} setCurrentTab={activateList} addUserTab={addList} deleteUserTab={deleteList}/>
+            <QuestList />
+            {
+              openQuest && <QuestDetailsPanel 
+                quest={openQuest} 
+                tagProps={{ userTags, addTag, deleteTag, updateTag }}
+                onUpdate={updateTodo} 
+                onDelete={deleteTodo}
+              />
+            }
           </div>
-          {
-            openQuest && <QuestDetailsPanel 
-              quest={openQuest} 
-              tagProps={{ userTags, addTag, deleteTag, updateTag }}
-              onUpdate={updateTodo} 
-              onDelete={deleteTodo}
-            />
-          }
-        </div>
+        </DndContext>
       </div>
       {
         settingsOpen && <SettingsMenu settings={settings} setSettings={setSettings} closeMenu={() => setSettingsOpen(false)}/>

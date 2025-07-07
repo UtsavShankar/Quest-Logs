@@ -1,7 +1,9 @@
 import { useState, useRef, useEffect, useMemo } from "react";
 import { SimpleButton } from "./Buttons";
+import { useDroppable } from "@dnd-kit/core";
 
-export default function TabList({ userTabs, activateTab, addUserTab, deleteUserTab }) {
+export default function TabList({ userTabs, currentTab, setCurrentTab, addUserTab, deleteUserTab }) {
+
     const defaultTabs = useMemo(() => [
         {
             id: "all",
@@ -15,7 +17,6 @@ export default function TabList({ userTabs, activateTab, addUserTab, deleteUserT
         }
     ], []);
 
-    const [currentTab, setCurrentTab] = useState("all");
     const [isAddingTab, setIsAddingTab] = useState(false);
     const [tabs, setTabs] = useState([]);
 
@@ -24,14 +25,6 @@ export default function TabList({ userTabs, activateTab, addUserTab, deleteUserT
     }, [defaultTabs, userTabs])
 
     const addTab = (name) => {
-        setTabs([
-            ...tabs,
-            {
-                id: tabs.length, // TODO: change this
-                name: name,
-                canEdit: true
-            }
-        ]);
         addUserTab(name);
         setIsAddingTab(false);
     }
@@ -45,7 +38,34 @@ export default function TabList({ userTabs, activateTab, addUserTab, deleteUserT
 
     const handleTabClick = (tabId) => {
         setCurrentTab(tabId);
-        activateTab(tabId);
+    }
+
+    function Tab({ tab }) {
+        const {isOver, setNodeRef} = useDroppable({
+            id: tab.id
+        })
+        
+        const style = {
+            textAlign: "left",
+            display: "flex",
+            justifyContent: "space-between",
+            padding: "0.25em 0.5em 0.25em",
+            borderRadius: "0.3em",
+            backgroundColor: isOver ? 'rgba(184, 124, 19, 0.5)' : undefined,
+        };
+
+        return (
+            <div ref={tab.canEdit ? setNodeRef : null} style={style}>
+                <button 
+                    key={tab.id}
+                    className={`side-button ${currentTab === tab.id && "selected"}`}
+                    style={{ textAlign: "left"}}
+                    onClick={() => handleTabClick(tab.id)}>
+                        {tab.name}
+                </button>
+                {tab.canEdit && <SimpleButton onClick={() => deleteTab(tab.id)}>Delete</SimpleButton>}
+            </div>
+        )
     }
 
     function AddTabButton() {
@@ -83,20 +103,8 @@ export default function TabList({ userTabs, activateTab, addUserTab, deleteUserT
 
     return (
         <div className="tab-list">
-            <div className="side-bar">
-                {tabs.map((tab) => 
-                    <div style={{ textAlign: "left", display: "flex", justifyContent: "space-between" }}>
-                        <button 
-                            key={tab.id}
-                            className={`side-button ${currentTab === tab.id && "selected"}`}
-                            style={{ textAlign: "left"}}
-                            onClick={() => handleTabClick(tab.id)}>
-                                {tab.name}
-                        </button>
-                        {tab.canEdit && <SimpleButton onClick={() => deleteTab(tab.id)}>Delete</SimpleButton>}
-                    </div>)}
-                <AddTabButton />
-            </div>
+            {tabs.map((tab) => <Tab tab={tab}/>)}
+            <AddTabButton />
         </div>
     )
 }
