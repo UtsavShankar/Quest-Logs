@@ -1,4 +1,4 @@
-import { useEffect, useState, useCallback } from "react";
+import { useEffect, useState, useCallback, act } from "react";
 import { db, auth } from "../firebase.js";
 import { signOut } from "firebase/auth";
 import {
@@ -24,6 +24,7 @@ import QuestDetailsPanel from "./QuestDetailsPanel.jsx";
 
 export default function TodoList({ user, settings, setSettings }) {
   const [todos, setTodos] = useState([]);
+  const [shownTodos, setShownTodos] = useState([]);
   const [userTags, setUserTags] = useState([]);
   const [newTask, setNewTask] = useState("");
   const sensors = useSensors(
@@ -39,7 +40,22 @@ export default function TodoList({ user, settings, setSettings }) {
   const [deadline, setDeadline] = useState(null);
   const [settingsOpen, setSettingsOpen] = useState(false);
   const [userLists, setUserLists] = useState([]);
+  const [activeList, setActiveList] = useState("all");
   const [openQuest, setOpenQuest] = useState(null);
+
+  const activateList = useCallback((listId) => {
+    if (listId === "all") {
+      setShownTodos(todos);
+    } else if (listId === "completed") {
+      setShownTodos(todos.filter(t => t.completed === true));
+    }
+    console.log("list changed to ", listId);
+    setActiveList(listId);
+  }, [todos]);
+
+  useEffect(() =>
+    activateList(activeList)
+  , [activateList, activeList, todos]);
 
   const loadTodos = useCallback(async () => {
     if (!user) return;
@@ -137,6 +153,7 @@ export default function TodoList({ user, settings, setSettings }) {
     await updateDoc(doc(db, "users", user.uid, "todos", id), {
       completed: completed
     });
+    loadTodos();
   }
 
   const handleLogout = async () => {
@@ -200,19 +217,19 @@ export default function TodoList({ user, settings, setSettings }) {
         <h1 style={{textAlign: 'center'}}>Quest Log</h1>
         <br />
         <div style={{ display: 'flex', justifyContent: 'center', gap: '1rem', flex: 1, margin: '2rem 2rem 2rem' }}>
-          <TabList userTabs={userLists} addUserTab={addList} deleteUserTab={deleteList}/>
+          <TabList userTabs={userLists} activateTab={activateList} addUserTab={addList} deleteUserTab={deleteList}/>
           <div className="quest-list">
             <DndContext onDragEnd={handleDragEnd} sensors={sensors} modifiers={[restrictToVerticalAxis]}>
               <SortableContext items={todos}>
                 <ul style={{listStyleType: "none", margin: 0, padding: 0}}>
-                  {todos.map((todo) => (
+                  {shownTodos.map((todo) => (
                     <TodoItem
                       key={todo.id} 
                       todo={todo}
                       tagProps={{ userTags, addTag, deleteTag, updateTag }}
                       onUpdate={updateTodo} 
                       onDelete={deleteTodo} 
-                      setIsCompleted={completed => toggleCompleted(todo.id, completed)} 
+                      onCompletedChange={completed => toggleCompleted(todo.id, completed)} 
                       onClick={() => setOpenQuest(todo)}
                       isOpen={openQuest && openQuest.id === todo.id}
                     />

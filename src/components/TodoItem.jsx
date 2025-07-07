@@ -1,10 +1,16 @@
 import { useSortable } from "@dnd-kit/sortable";
 import { CSS } from "@dnd-kit/utilities";
+import { useEffect, useState } from "react";
 
-export default function TodoItem({ todo, tagProps, setIsCompleted, onClick, isOpen }) {
+export default function TodoItem({ todo, tagProps, onCompletedChange, onClick, isOpen }) {
   const {attributes, listeners, setNodeRef, transform, transition} = useSortable({
     id: todo.id,
   });
+  const [completed, setCompleted] = useState(todo.completed);
+
+  useEffect(() => {
+    setCompleted(todo.completed);
+  }, [todo])
   
   const style = {
     transform: CSS.Translate.toString(transform),
@@ -46,7 +52,11 @@ export default function TodoItem({ todo, tagProps, setIsCompleted, onClick, isOp
 
   return (
     <li ref={setNodeRef} className={`todo-item ${isOpen && "selected"}`} style={style} {...attributes} onClick={onClick}>
-      <input type="checkbox" checked={todo.completed} onChange={e => setIsCompleted(e.target.checked)}/>
+      <input type="checkbox" checked={completed} onClick={e => e.stopPropagation()} onChange={e => {
+        const newVal = e.target.checked;
+        setCompleted(newVal);
+        onCompletedChange(newVal);
+      }}/>
         <div>
           <div style={{ display: 'grid', gridTemplateColumns: '1fr 3rem auto', gap: '8px', alignItems: 'left'}}>
             <div style={{ display: 'contents', cursor: 'pointer' }} {...listeners}>

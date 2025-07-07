@@ -1,7 +1,7 @@
 import { useState, useRef, useEffect, useMemo } from "react";
 import { SimpleButton } from "./Buttons";
 
-export default function TabList({ userTabs, addUserTab, deleteUserTab }) {
+export default function TabList({ userTabs, activateTab, addUserTab, deleteUserTab }) {
     const defaultTabs = useMemo(() => [
         {
             id: "all",
@@ -41,6 +41,11 @@ export default function TabList({ userTabs, addUserTab, deleteUserTab }) {
             setCurrentTab("all");
         }
         deleteUserTab(tabId);
+    }
+
+    const handleTabClick = (tabId) => {
+        setCurrentTab(tabId);
+        activateTab(tabId);
     }
 
     function AddTabButton() {
@@ -85,7 +90,7 @@ export default function TabList({ userTabs, addUserTab, deleteUserTab }) {
                             key={tab.id}
                             className={`side-button ${currentTab === tab.id && "selected"}`}
                             style={{ textAlign: "left"}}
-                            onClick={() => setCurrentTab(tab.id)}>
+                            onClick={() => handleTabClick(tab.id)}>
                                 {tab.name}
                         </button>
                         {tab.canEdit && <SimpleButton onClick={() => deleteTab(tab.id)}>Delete</SimpleButton>}
