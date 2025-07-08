@@ -1,6 +1,7 @@
 import { useSortable } from "@dnd-kit/sortable";
 import { CSS } from "@dnd-kit/utilities";
 import { useEffect, useState } from "react";
+import tagColours from "./TagData";
 
 export default function TodoItem({ todo, tagProps, onCompletedChange, onClick, isOpen }) {
   const {attributes, listeners, setNodeRef, transform, transition} = useSortable({
@@ -22,7 +23,7 @@ export default function TodoItem({ todo, tagProps, onCompletedChange, onClick, i
   const getTag = () => {
     const tagId = todo.tags?.[0];
     const tagData = userTags.find(tag => tag.id === tagId);
-    return tagId && tagData ? tagData.name : null;
+    return tagId && tagData ? tagData : null;
   }
 
   const getDaysRemaining = (deadline) => {
@@ -58,10 +59,11 @@ export default function TodoItem({ todo, tagProps, onCompletedChange, onClick, i
         onCompletedChange(newVal);
       }}/>
         <div>
-          <div style={{ display: 'grid', gridTemplateColumns: '1fr 3rem auto', gap: '8px', alignItems: 'left'}}>
+          <div style={{ display: 'grid', gridTemplateColumns: '1fr fit-content(5rem) auto', gap: '8px', alignItems: 'left'}}>
             <div style={{ display: 'contents', cursor: 'pointer' }} {...listeners}>
             <span>{todo.title}</span>
-            <span>{getTag()}</span>
+            <span style={{ background: `${tagColours.find(c => c.id === getTag()?.colour)?.background}`,
+              justifySelf: "start", alignSelf: "center" }} className="tag">{getTag()?.name}</span>
             </div>
           </div>
         </div>

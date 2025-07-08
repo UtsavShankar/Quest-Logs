@@ -2,6 +2,7 @@ import { useRef, useState, useEffect, useCallback } from "react";
 import TagPicker from "./Tags";
 import { SimpleButton } from "./Buttons";
 import DescriptionBox from "./DescriptionBox";
+import tagColours from "./TagData";
 
 export default function QuestDetailsPanel({ quest, onUpdate, onDelete, tagProps }) {
     const { userTags } = tagProps;
@@ -12,7 +13,11 @@ export default function QuestDetailsPanel({ quest, onUpdate, onDelete, tagProps 
     const getTag = useCallback(() => {
         const tagId = quest.tags?.[0];
         const tagData = userTags.find(tag => tag.id === tagId);
-        const tag = tagId && tagData ? { id: tagId, name: tagData.name } : null;
+        const tag = tagId && tagData ? { 
+            id: tagId, 
+            name: tagData.name, 
+            colour: tagData.colour
+        } : null;
         return tag;
     }, [quest.tags, userTags])
 
@@ -40,7 +45,7 @@ export default function QuestDetailsPanel({ quest, onUpdate, onDelete, tagProps 
     }, [getTag, quest]);
 
     const updateTitle = (newTitle) => onUpdate(quest.id, newTitle, tag.id, deadline, quest.description);
-    const updateTag = (newTag) => onUpdate(quest.id, quest.title, newTag.id, deadline, quest.description);
+    const updateTag = (newTag) => onUpdate(quest.id, quest.title, newTag ? newTag.id : null, deadline, quest.description);
     const updateDeadline = (newDeadline) => onUpdate(quest.id, quest.title, tag.id, newDeadline, quest.description);
     const updateDescription = (newDescription) => onUpdate(quest.id, quest.title, tag.id, deadline, newDescription)
 
@@ -89,7 +94,7 @@ export default function QuestDetailsPanel({ quest, onUpdate, onDelete, tagProps 
                     ? <TagPicker 
                         userId={quest.userId} 
                         tagProps={tagProps}
-                        editTag={quest.tag}
+                        editTag={tag}
                         onUpdate={newTag => {
                             setTag(newTag);
                             updateTag(newTag);
@@ -97,8 +102,10 @@ export default function QuestDetailsPanel({ quest, onUpdate, onDelete, tagProps 
                         endEdit={() => setIsEditingTag(false)}
                         />
                     : tag
-                        ? <span onClick={() => setIsEditingTag(true)}>{tag.name}</span>
-                        : <SimpleButton onClick={() => setIsEditingTag(true)}>Add Tag</SimpleButton>
+                        ? <span style={{ background: `${tagColours.find(c => c.id === tag?.colour)?.background}`, 
+                            justifySelf: "start", cursor: "pointer" }} 
+                            className="tag" onClick={() => setIsEditingTag(true)}>{tag.name}</span>
+                        : <SimpleButton style={{color: "gray"}} onClick={() => setIsEditingTag(true)}>Add Tag</SimpleButton>
                 }
                 {
                     isEditingDate

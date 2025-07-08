@@ -103,7 +103,7 @@ export default function TabList({ userTabs, currentTab, setCurrentTab, addUserTa
 
     return (
         <div className="tab-list">
-            {tabs.map((tab) => <Tab tab={tab}/>)}
+            {tabs.map((tab) => <Tab key={tab.id} tab={tab}/>)}
             <AddTabButton />
         </div>
     )

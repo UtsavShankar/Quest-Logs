@@ -5,12 +5,14 @@ import {
   collection,
   addDoc,
   query,
+  where,
   onSnapshot,
   getDocs,
   deleteDoc,
   doc,
   updateDoc,
-  orderBy
+  orderBy,
+  writeBatch
 } from "firebase/firestore";
 import { DndContext, PointerSensor, useSensor, useSensors} from "@dnd-kit/core";
 import { SortableContext, arrayMove } from "@dnd-kit/sortable";
@@ -93,7 +95,8 @@ export default function TodoList({ user, settings, setSettings }) {
   const loadUserTags = useCallback(async () => {
     const items = (await loadSubCollection("tags")).map(doc => ({
       id: doc.docId,
-      name: doc.name
+      name: doc.name,
+      colour: doc.colour
     }));
     setUserTags(items);
   }, [loadSubCollection]);
@@ -191,7 +194,10 @@ export default function TodoList({ user, settings, setSettings }) {
   };
 
   const addTag = async (tagName) => {
-    await addDoc(collection(db, "users", user.uid, "tags"), { name: tagName });
+    await addDoc(collection(db, "users", user.uid, "tags"), { 
+      name: tagName,
+      colour: "grey"
+    });
     loadUserTags();
   }
 
@@ -199,11 +205,28 @@ export default function TodoList({ user, settings, setSettings }) {
     const docRef = doc(db, "users", user.uid, "tags", tagId);
     await deleteDoc(docRef);
     loadUserTags();
+
+    const q = query(
+      collection(db, "users", user.uid, "todos"),
+      where("tags", "array-contains", tagId)
+    );
+    const snapshot = await getDocs(q);
+    const batch = writeBatch(db);
+
+    snapshot.forEach(doc => {
+      const data = doc.data();
+      const newTags = data.tags.filter(t => t !== tagId);
+      batch.update(doc.ref, { tags: newTags });
+    });
+
+    await batch.commit();
+    loadTodos();
   }
 
-  const updateTag = async (tagId, newName) => {
+  const updateTag = async (tagId, newName, newColour) => {
     await updateDoc(doc(db, "users", user.uid, "tags", tagId), { 
-      name: newName
+      name: newName,
+      colour: newColour
     });
     loadUserTags();
   }
