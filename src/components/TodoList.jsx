@@ -22,6 +22,7 @@ import SettingsMenu from "./Settings";
 import { SettingsButton, SimpleButton } from "./Buttons";
 import TabList from "./TabList"
 import QuestDetailsPanel from "./QuestDetailsPanel.jsx";
+import { formatDate } from "../utils/dateUtils.js";
 
 export default function TodoList({ user, settings, setSettings }) {
   const [todos, setTodos] = useState([]);
@@ -140,11 +141,12 @@ export default function TodoList({ user, settings, setSettings }) {
     loadTodos();
   };
 
-  const updateTodo = async (id, newTitle, newTagId, newDeadline, newDescription) => {
+  const updateTodo = async (id, newTitle, newTagId, newDeadline, newScheduledDate, newDescription) => {
      await updateDoc(doc(db, "users", user.uid, "todos", id), { 
       title: newTitle,
       tags: newTagId ? [newTagId] : [],
       deadline: newDeadline,
+      scheduledDate: newScheduledDate ?? null,
       description: newDescription
     });
     loadTodos();
@@ -259,25 +261,52 @@ export default function TodoList({ user, settings, setSettings }) {
     )
   }
 
-  function QuestList() {
+  function TimelineView() {
+    const scheduledDates = [...new Set(todos.map(t => t.scheduledDate ? t.scheduledDate : null))].sort(function(a,b) {
+      if (!b) return -1;
+      if (!a) return 1;
+      return new Date(a) - new Date(b);
+    });
+
     return (
-      <div className="quest-list">
-          <SortableContext items={todos}>
-            <ul style={{listStyleType: "none", margin: 0, padding: 0}}>
-              {shownTodos.map((todo) => (
-                <TodoItem
-                  key={todo.id} 
+      scheduledDates.map(date => <div>
+          <h3 style={{ padding: "0 0 0 0.8rem" }}>{date ? formatDate(date) : "Upcoming"}</h3>
+          {
+            todos.filter(t => date ? t.scheduledDate === date : !t.scheduledDate)
+              .map(todo => <TodoItem
+                key={todo.id} 
                   todo={todo}
                   tagProps={{ userTags, addTag, deleteTag, updateTag }}
-                  onUpdate={updateTodo} 
-                  onDelete={deleteTodo} 
                   onCompletedChange={completed => toggleCompleted(todo.id, completed)} 
                   onClick={() => setOpenQuest(todo)}
                   isOpen={openQuest && openQuest.id === todo.id}
                 />
-              ))}
+              )
+          }
+        </div>
+      )
+    )
+  }
+
+  function QuestList() {
+    return (
+      <div className="quest-list">
+          {activeList !== "timeline"
+          ? <SortableContext items={todos}>
+            <ul style={{listStyleType: "none", margin: 0, padding: 0}}>
+              {shownTodos.map((todo) => (
+                    <TodoItem
+                      key={todo.id} 
+                      todo={todo}
+                      tagProps={{ userTags, addTag, deleteTag, updateTag }}
+                      onCompletedChange={completed => toggleCompleted(todo.id, completed)} 
+                      onClick={() => setOpenQuest(todo)}
+                      isOpen={openQuest && openQuest.id === todo.id}
+                    />
+                  ))}
             </ul>
           </SortableContext>
+          : <TimelineView />}
         <br />
         <div style={{ position: 'relative', display: 'grid', gridTemplateColumns: "1fr auto", gap: '8px', alignItems: 'center', margin: "0 1em 0"}}>
           <input className="text-input" value={newTask} placeholder="Enter new quest" onChange={(e) => setNewTask(e.target.value)} />

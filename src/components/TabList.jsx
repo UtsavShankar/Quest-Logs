@@ -11,6 +11,11 @@ export default function TabList({ userTabs, currentTab, setCurrentTab, addUserTa
             canEdit: false
         },
         {
+            id: "timeline",
+            name: "Timeline",
+            canEdit: false
+        },
+        {
             id: "completed",
             name: "Completed",
             canEdit: false
