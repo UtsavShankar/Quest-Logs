@@ -1,0 +1,86 @@
+import { useState } from "react";
+import { SortableContext } from "@dnd-kit/sortable";
+import TodoItem from "./TodoItem";
+import TimelineView from "./TimelineView";
+import TagPicker from "../Tags/Tags";
+import "../Buttons.css";
+
+export default function QuestList({ todos, activeList, shownTodos, tagProps, toggleCompleted, openQuest, setOpenQuest, addTodoToDatabase }) {
+    const { userTags, addTag, deleteTag, updateTag } = tagProps;
+    const [newTask, setNewTask] = useState("");
+    const [isAddingTag, setIsAddingTag] = useState(false);
+    const [tag, setTag] = useState(null);
+    const [isAddingDate, setIsAddingDate] = useState(false);
+    const [deadline, setDeadline] = useState(null);
+    
+    const addTodo = async () => {
+        if (!newTask.trim()) return;
+        const item = {
+            title: newTask,
+            completed: false,
+            createdAt: Date.now(),
+            sortOrder: todos.length,
+            deadline: deadline,
+            tags: [tag],
+            description: "",
+        };
+        if (activeList !== "all" && activeList !== "completed") {
+            item.list = activeList;
+        }
+        setNewTask("");
+        setTag("");
+        setDeadline(null);
+        setIsAddingTag(false);
+        setIsAddingDate(false);
+        addTodoToDatabase(item);
+    };
+
+    return (
+        <div className="quest-list">
+            {activeList !== "timeline"
+            ? <SortableContext items={todos}>
+            <ul style={{listStyleType: "none", margin: 0, padding: 0}}>
+                {shownTodos.map((todo) => (
+                    <TodoItem
+                        key={todo.id} 
+                        todo={todo}
+                        tagProps={tagProps}
+                        onCompletedChange={completed => toggleCompleted(todo.id, completed)} 
+                        onClick={() => setOpenQuest(todo)}
+                        isOpen={openQuest && openQuest.id === todo.id}
+                    />
+                    ))}
+            </ul>
+            </SortableContext>
+            : <TimelineView 
+                todos={todos}
+                tagProps={{ userTags, addTag, deleteTag, updateTag }}
+                todoActions={{ toggleCompleted, openQuest, setOpenQuest }}
+            />
+            }
+        <br />
+        <div style={{ position: 'relative', display: 'grid', gridTemplateColumns: "1fr auto", gap: '8px', alignItems: 'center', margin: "0 1em 0"}}>
+            <input className="text-input" value={newTask} placeholder="Enter new quest" onChange={(e) => setNewTask(e.target.value)} />
+            <button onClick={addTodo}>Add Quest</button>
+        </div>
+        <div style={{ display: "flex", gap: "1em", margin: "0.5em 1em 0.5em", position: "relative"}}>
+            <span>
+            {
+                !isAddingTag
+                ? tag
+                ? <span className="tag" onClick={() => setIsAddingTag(true)}>{tag.name}</span>
+                : <button className="simple-button" onClick={() => setIsAddingTag(true)}>Add Tag</button>
+                : <TagPicker editTag={tag} tagProps={{ userTags, addTag, deleteTag, updateTag }} onUpdate={newTag => setTag(newTag)} endEdit={() => setIsAddingTag(false)}/>
+            }
+            </span>
+            <span>
+            {
+                !isAddingDate
+                ? <button className="simple-button" value={tag || ""} onClick={() => setIsAddingDate(true)}>Add Date</button>
+                : <input type="date" value={deadline || ""} onChange={(e) => setDeadline(e.target.value)}/>
+            }
+            </span>
+        </div>
+        </div>
+    )
+}

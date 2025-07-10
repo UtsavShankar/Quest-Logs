@@ -1,6 +1,6 @@
 import { useState, useEffect, useRef } from "react";
 import { createPortal } from "react-dom";
-import "./Buttons.css";
+import "../Buttons.css";
 
 export default function TagItem({ tag, colours, onClick, onUpdate, onDelete, menuRef }) {
     const [currentColour, setCurrentColour] = useState("grey");

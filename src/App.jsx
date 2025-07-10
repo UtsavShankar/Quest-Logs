@@ -2,7 +2,7 @@ import { useState, useEffect, useRef } from 'react';
 import { auth } from './firebase';
 import { onAuthStateChanged } from 'firebase/auth';
 import AuthForm from "./components/AuthForm";
-import TodoList from "./components/TodoList";
+import QuestLog from "./components/QuestLog.jsx";
 import BackgroundVideo from './components/Background';
 
 function App() {
@@ -75,7 +75,7 @@ function App() {
       {!user ? (
         <AuthForm />
       ) : (
-        <TodoList user={user} settings={settings} setSettings={setSettings} />
+        <QuestLog user={user} settings={settings} setSettings={setSettings} />
       )}
     </div>
   );

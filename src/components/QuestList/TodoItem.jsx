@@ -1,7 +1,7 @@
 import { useSortable } from "@dnd-kit/sortable";
 import { CSS } from "@dnd-kit/utilities";
 import { useEffect, useState } from "react";
-import tagColours from "../data/tagData.js";
+import tagColours from "../../data/tagData.js";
 
 export default function TodoItem({ todo, tagProps, onCompletedChange, onClick, isOpen }) {
   const {attributes, listeners, setNodeRef, transform, transition} = useSortable({

@@ -1,9 +1,9 @@
 import { useRef, useState, useEffect, useCallback } from "react";
-import TagPicker from "./Tags";
-import { SimpleButton } from "./Buttons";
+import TagPicker from "../Tags/Tags.jsx";
+import { SimpleButton } from "../Buttons.jsx";
 import DescriptionBox from "./DescriptionBox";
-import tagColours from "../data/tagData.js";
-import { formatDate } from "../utils/dateUtils.js";
+import tagColours from "../../data/tagData.js";
+import { formatDate } from "../../utils/dateUtils.js";
 
 export default function QuestDetailsPanel({ quest, onUpdate, onDelete, tagProps }) {
     const { userTags } = tagProps;
