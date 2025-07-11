@@ -82,6 +82,12 @@ export default function TodoList({ user, settings, setSettings }) {
     loadTodos();
   }, [loadTodos]);
 
+  //if todos is changed, send the todos to ipc renderer
+  useEffect(() => {
+    if (todos.length > 0 && window?.electronAPI.sendTodosToMain) {
+      window.electronAPI.sendTodosToMain(todos);
+    }},[todos])
+
   const loadSubCollection = useCallback(async (subcollection) => {
     const q = query(
         collection(db, "users", user.uid, subcollection)
