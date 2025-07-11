@@ -77,7 +77,7 @@ function scheduleNotification(todo) {
       title: 'Quest Due!',
       body: `⏰ "${todo.title}" is due today!`,
     }).show();
-  }, 5000); //shows after 1 second to ensure the app is ready
+  }, delay); 
 }
 
 // IPC code here 
