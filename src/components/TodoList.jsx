@@ -18,7 +18,7 @@ import { DndContext, PointerSensor, useSensor, useSensors} from "@dnd-kit/core";
 import { SortableContext, arrayMove } from "@dnd-kit/sortable";
 import TodoItem from "./TodoItem";
 import TagPicker from "./Tags";
-import SettingsMenu from "./Settings";
+import SettingsMenu from "./Settings"; 
 import { SettingsButton, SimpleButton } from "./Buttons";
 import TabList from "./TabList"
 import QuestDetailsPanel from "./QuestDetailsPanel.jsx";
@@ -39,6 +39,7 @@ export default function TodoList({ user, settings, setSettings }) {
   const [isAddingTag, setIsAddingTag] = useState(false);
   const [tag, setTag] = useState(null);
   const [isAddingDate, setIsAddingDate] = useState(false);
+  const [isNotifying, setIsNotifying] = useState(true);
   const [deadline, setDeadline] = useState(null);
   const [settingsOpen, setSettingsOpen] = useState(false);
   const [userLists, setUserLists] = useState([]);
@@ -333,6 +334,14 @@ export default function TodoList({ user, settings, setSettings }) {
               !isAddingDate
               ? <SimpleButton value={tag || ""} onClick={() => setIsAddingDate(true)}>Add Date</SimpleButton>
               : <input type="date" value={deadline || ""} onChange={(e) => setDeadline(e.target.value)}/>
+            }
+          </span>
+          {/* ADDING NOTIFICATION TOGGLE  */}
+          <span>
+            {
+              isNotifying
+              ? <SimpleButton value={tag || ""} onClick={() => setIsNotifying(false)}>NOTIFICATION ON</SimpleButton>
+              : <SimpleButton onClick={() => setIsNotifying(true)}>NOTIFICATION OFF</SimpleButton>
             }
           </span>
         </div>
