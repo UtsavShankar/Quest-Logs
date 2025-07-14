@@ -87,7 +87,8 @@ export default function TodoList({ user, settings, setSettings }) {
   useEffect(() => {
     if (todos.length > 0 && window?.electronAPI.sendTodosToMain) {
       window.electronAPI.sendTodosToMain(todos);
-    }},[todos])
+    }
+  },[todos])
 
   const loadSubCollection = useCallback(async (subcollection) => {
     const q = query(

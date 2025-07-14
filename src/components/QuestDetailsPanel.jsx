@@ -55,7 +55,7 @@ export default function QuestDetailsPanel({ quest, onUpdate, onDelete, tagProps 
     const updateTag = (newTag) => 
         onUpdate(quest.id, quest.title, newTag ? newTag.id : null, deadline, scheduledDate, quest.description, isNotifying);
     const updateDeadline = (newDeadline) => 
-        onUpdate(quest.id, quest.title, tag ? tag.id : null, newDeadline, scheduledDate, quest.description, isNotifying);
+        onUpdate(quest.id, quest.title, tag ? tag.id : null, newDeadline, scheduledDate, quest.description);
     const updateDescription = (newDescription) => 
         onUpdate(quest.id, quest.title, tag ? tag.id : null, deadline, scheduledDate, newDescription, isNotifying);
     const updateScheduledDate = (newScheduledDate) => 

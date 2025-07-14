@@ -1,4 +1,3 @@
-const { create } = require('domain');
 const { app,Tray,Menu, BrowserWindow, nativeImage } = require('electron');
 const path = require('path');
 const { ipcMain, Notification } = require("electron");
@@ -6,6 +5,8 @@ const { ipcMain, Notification } = require("electron");
 const isDev = !app.isPackaged;
 let tray = null;
 let win = null;
+let isQuitting = false;
+
 function createTray() {
   if (!tray){
   const icon = nativeImage.createFromPath('' + path.join(__dirname, 'public/favicon.ico'));
@@ -15,11 +16,7 @@ function createTray() {
       label: 'Show App',
       click: () => {
         console.log('Show App clicked');
-        if(!win){
-          createWindow();
-        }else{
-          win.show();
-        }
+        activateApp();
       }
     },
     {
@@ -35,6 +32,13 @@ function createTray() {
   }
 }
 
+function activateApp() {
+  if(!win){
+    createWindow();
+  }else{
+    win.show();
+  }
+}
 
 function createWindow() {
    win = new BrowserWindow({
@@ -55,10 +59,21 @@ function createWindow() {
 
   createTray();
 
+  app.on('before-quit', (event) => {
+    isQuitting = true;
+  })
 
   win.on('close', (event) => {
-    event.preventDefault();
-    win.hide();
+    if (!isQuitting) {
+      event.preventDefault();
+      win.hide();
+      win.webContents.send('window-hidden');
+    }
+  });
+
+  app.on('activate', () => {
+    activateApp();
+    win.webContents.send('window-activated');
   });
 }
 
