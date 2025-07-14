@@ -69,6 +69,19 @@ function App() {
       windRef.current.volume = 0.3 * settings.ambienceVolume / 100;
   }, [settings.ambienceVolume, settings.dynamicBG])
 
+
+  useEffect(() => {
+    window.electronAPI.onWindowHidden(() => {
+      if (windRef.current) windRef.current.pause();
+      if (fireCracklingRef.current) fireCracklingRef.current.pause();
+    });
+
+    window.electronAPI.onWindowActivated(() => {
+      settings.fireCrackling && settings.dynamicBG && fireCracklingRef.current.play();
+      settings.wind && settings.dynamicBG && windRef.current.play();
+    })
+  }, [settings.dynamicBG, settings.fireCrackling, settings.wind]);
+
   return (
     <div>
       {settings.dynamicBG && <BackgroundVideo />}
