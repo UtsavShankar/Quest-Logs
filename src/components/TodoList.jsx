@@ -133,6 +133,7 @@ export default function TodoList({ user, settings, setSettings }) {
       createdAt: Date.now(),
       sortOrder: todos.length,
       deadline: deadline,
+      isNotifying:isNotifying,
       tags: [tag],
       description: "",
     };
@@ -145,16 +146,18 @@ export default function TodoList({ user, settings, setSettings }) {
     setDeadline(null);
     setIsAddingTag(false);
     setIsAddingDate(false);
+    setIsNotifying(true);
     loadTodos();
   };
 
-  const updateTodo = async (id, newTitle, newTagId, newDeadline, newScheduledDate, newDescription) => {
+  const updateTodo = async (id, newTitle, newTagId, newDeadline, newScheduledDate, newDescription, isNotifying) => {
      await updateDoc(doc(db, "users", user.uid, "todos", id), { 
       title: newTitle,
       tags: newTagId ? [newTagId] : [],
       deadline: newDeadline,
       scheduledDate: newScheduledDate ?? null,
-      description: newDescription
+      description: newDescription,
+      isNotifying: isNotifying ?? false
     });
     loadTodos();
   };
@@ -340,8 +343,8 @@ export default function TodoList({ user, settings, setSettings }) {
           <span>
             {
               isNotifying
-              ? <SimpleButton value={tag || ""} onClick={() => setIsNotifying(false)}>NOTIFICATION ON</SimpleButton>
-              : <SimpleButton onClick={() => setIsNotifying(true)}>NOTIFICATION OFF</SimpleButton>
+              ? <SimpleButton value={tag || ""} onClick={() => setIsNotifying(false)}>NOTIFICATIONS ON</SimpleButton>
+              : <SimpleButton onClick={() => setIsNotifying(true)}>NOTIFICATIONS OFF</SimpleButton>
             }
           </span>
         </div>

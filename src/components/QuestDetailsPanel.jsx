@@ -24,6 +24,7 @@ export default function QuestDetailsPanel({ quest, onUpdate, onDelete, tagProps 
 
     const [tag, setTag] = useState(getTag());
     const [isEditingTag, setIsEditingTag] = useState(false);
+    const [isNotifying, setIsNotifying] = useState(quest.isNotifying || false);
     
     const [deadline, setDeadline] = useState(quest.deadline);
     const [isEditingDate, setIsEditingDate] = useState(false);
@@ -39,6 +40,7 @@ export default function QuestDetailsPanel({ quest, onUpdate, onDelete, tagProps 
         setDeadline(quest.deadline);
         setDescription(quest.description);
         setScheduledDate(quest.scheduledDate);
+        setIsNotifying(quest.isNotifying || true);
     }, [getTag, quest]);
 
     useEffect(() => {
@@ -49,15 +51,17 @@ export default function QuestDetailsPanel({ quest, onUpdate, onDelete, tagProps 
     }, [quest.id]);
 
     const updateTitle = (newTitle) => 
-        onUpdate(quest.id, newTitle, tag ? tag.id : null, deadline, scheduledDate, quest.description);
+        onUpdate(quest.id, newTitle, tag ? tag.id : null, deadline, scheduledDate, quest.description, isNotifying);
     const updateTag = (newTag) => 
-        onUpdate(quest.id, quest.title, newTag ? newTag.id : null, deadline, scheduledDate, quest.description);
+        onUpdate(quest.id, quest.title, newTag ? newTag.id : null, deadline, scheduledDate, quest.description, isNotifying);
     const updateDeadline = (newDeadline) => 
-        onUpdate(quest.id, quest.title, tag ? tag.id : null, scheduledDate, quest.description);
+        onUpdate(quest.id, quest.title, tag ? tag.id : null, newDeadline, scheduledDate, quest.description, isNotifying);
     const updateDescription = (newDescription) => 
-        onUpdate(quest.id, quest.title, tag ? tag.id : null, deadline, scheduledDate, newDescription);
+        onUpdate(quest.id, quest.title, tag ? tag.id : null, deadline, scheduledDate, newDescription, isNotifying);
     const updateScheduledDate = (newScheduledDate) => 
-        onUpdate(quest.id, quest.title, tag ? tag.id : null, deadline, newScheduledDate, quest.description);
+        onUpdate(quest.id, quest.title, tag ? tag.id : null, deadline, newScheduledDate, quest.description, isNotifying);
+    const updateisNotifying = (newisNotifying) => 
+        onUpdate(quest.id, quest.title, tag ? tag.id : null, deadline, scheduledDate, quest.description, newisNotifying);
 
     function DatePicker({ value, onChange }) {
         const ref = useRef();
@@ -113,6 +117,7 @@ export default function QuestDetailsPanel({ quest, onUpdate, onDelete, tagProps 
                                 className="tag" onClick={() => setIsEditingTag(true)}>{tag.name}</span>
                             : <SimpleButton style={{color: "gray"}} onClick={() => setIsEditingTag(true)}>Add Tag</SimpleButton>
                     }
+
                     {
                         isEditingDate
                         ? <DatePicker value={deadline} onChange={(e) => {
@@ -125,6 +130,7 @@ export default function QuestDetailsPanel({ quest, onUpdate, onDelete, tagProps 
                         ? <SimpleButton onClick={() => setIsEditingDate(true)}>{formatDate(deadline)}</SimpleButton>
                         : <SimpleButton style={{ color: "gray" }} onClick={() => setIsEditingDate(true)}>Add Deadline</SimpleButton>
                     }
+
                     <span style={{ whiteSpace: 'pre' }}>{daysRemaining}</span>
                 </div>
                 <div style={{ padding: "0.5rem" }}>
@@ -141,6 +147,13 @@ export default function QuestDetailsPanel({ quest, onUpdate, onDelete, tagProps 
                         : scheduledDate
                         ? <button className="simple-button" onClick={() => setIsEditingScheduledDate(true)}>{formatDate(scheduledDate)}</button>
                         : <button style={{ color: "gray" }} className="simple-button" onClick={() => setIsEditingScheduledDate(true)}>Add Date</button>
+                    }
+                    </span>
+                                     <span style={{ margin: "0.5rem" }}>
+                    {
+                        isNotifying
+                        ? <SimpleButton value={tag || ""} onClick={() => { setIsNotifying(false); updateisNotifying(false); }}>NOTIFICATIONS ON</SimpleButton>
+                        : <SimpleButton onClick={() => { setIsNotifying(true); updateisNotifying(true); }}>NOTIFICATIONS OFF</SimpleButton>
                     }
                     </span>
                 </div>

@@ -64,7 +64,14 @@ function createWindow() {
 
 //! NEED TO DO PERMISSION LOGIC 
 function scheduleNotification(todo) {
-  if (!todo.deadline) return; // skip if no deadline
+  if (!todo.deadline || !todo.isNotifying){
+    // console.log("No deadline or not notifying, skipping notification for", todo.title);
+    if(!todo.isNotifying) {
+      console.log("Skipping notification for", todo.title);
+    }
+    return
+  }; // skip if no deadline or not notifying
+
 
   const deadlineTime = new Date(`${todo.deadline}T00:00:00`).getTime();
   const now = Date.now();
@@ -82,7 +89,6 @@ function scheduleNotification(todo) {
 
 // IPC code here 
 ipcMain.on("schedule-todos", (event, todos) => {
-  console.log("Received todos from renderer process:", todos);
   todos.forEach(scheduleNotification);
 });
 
