@@ -4,6 +4,7 @@ import { onAuthStateChanged } from 'firebase/auth';
 import AuthForm from "./components/AuthForm";
 import QuestLog from "./components/QuestLog.jsx";
 import BackgroundVideo from './components/Background';
+import { ThemeProvider } from './ThemeContext.js';
 
 function App() {
   const [user, setUser] = useState(null);
@@ -11,7 +12,8 @@ function App() {
         dynamicBG: true,
         ambienceVolume: 50,
         fireCrackling: true,
-        wind: true
+        wind: true,
+        theme: "quest"
   })
   const fireCracklingRef = useRef(null);
   const windRef = useRef(null);
@@ -82,15 +84,26 @@ function App() {
     })
   }, [settings.dynamicBG, settings.fireCrackling, settings.wind]);
 
+  useEffect(() => {
+    const root = document.documentElement;
+    if (settings.theme === "mission") {
+      root.classList.add("theme-mission");
+    } else {
+      root.classList.remove("theme-mission");
+    }
+  }, [settings.theme])
+
   return (
-    <div>
-      {settings.dynamicBG && <BackgroundVideo />}
-      {!user ? (
-        <AuthForm />
-      ) : (
-        <QuestLog user={user} settings={settings} setSettings={setSettings} />
-      )}
-    </div>
+    <ThemeProvider initialTheme={settings.theme}>
+      <div>
+        {settings.dynamicBG && <BackgroundVideo />}
+        {!user ? (
+          <AuthForm />
+        ) : (
+          <QuestLog user={user} settings={settings} setSettings={setSettings} />
+        )}
+      </div>
+    </ThemeProvider>
   );
 }
 

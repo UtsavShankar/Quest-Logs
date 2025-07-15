@@ -1,13 +1,31 @@
 import { useState, useEffect } from "react";
+import { useTheme } from "../ThemeContext";
 
 export default function SettingsMenu({ closeMenu, settings, setSettings }) {
     const [currentSection, setCurrentSection] = useState("preferences");
+
+    const themes = [
+        {
+            key: "quest",
+            name: "Quest"
+        },
+        {
+            key: "mission",
+            name: "Mission"
+        }
+    ]
 
     const preferencesOptions = [
         {
             key: "dynamicBG",
             label: "Dynamic Background",
             type: "switch"
+        },
+        {
+            key: "theme",
+            label: "Theme",
+            type: "dropdown",
+            options: themes
         }
     ]
 
@@ -68,6 +86,19 @@ export default function SettingsMenu({ closeMenu, settings, setSettings }) {
         </label>
     }
 
+    function Dropdown({ label, value, options, onChange }) {
+        return <label style={{display: "flex", alignItems: "center"}}>
+            <span className="option-label">{label}</span>
+            <select value={value} onChange={(e) => onChange(e.target.value)}>
+                {options.map((option) => (
+                    <option key={option.key} value={option.key}>
+                        {option.name}
+                    </option>
+                ))}
+            </select>
+        </label>
+    }
+
     useEffect(() => {
         const sliders = document.querySelectorAll('.settings input[type="range"]');
 
@@ -87,6 +118,12 @@ export default function SettingsMenu({ closeMenu, settings, setSettings }) {
         });
     }, [settings]);
 
+    const { setTheme } = useTheme();
+
+    useEffect(() => {
+        setTheme(settings.theme);
+    }, [settings.theme, setTheme])
+
     return (
         <div className="settings-wrapper">
             <div className="settings-menu">
@@ -100,7 +137,9 @@ export default function SettingsMenu({ closeMenu, settings, setSettings }) {
                     <div style={{position: "absolute", top: "8%", right: "75%"}}>
                         <div className="side-bar">
                             {
-                                sections.map(sect => <button className={`side-button ${currentSection === sect.key && "selected"}`}
+                                sections.map(sect => <button 
+                                    key={sect.key}
+                                    className={`side-button ${currentSection === sect.key && "selected"}`}
                                     onClick={() => setCurrentSection(sect.key)}>
                                     {sect.label}
                                 </button>)
@@ -123,6 +162,8 @@ export default function SettingsMenu({ closeMenu, settings, setSettings }) {
                                         return <Slider key={opt.key} {...commonProps} min={opt.min} max={opt.max}/>;
                                     case "switch":
                                         return <Switch key={opt.key} {...commonProps}/>;
+                                    case "dropdown":
+                                        return <Dropdown key={opt.key} {...commonProps} options={opt.options}/>
                                     default:
                                         return null;
                                 }
@@ -131,6 +172,7 @@ export default function SettingsMenu({ closeMenu, settings, setSettings }) {
                     </div>
                 </div>
             </div>
+            <div className="dark-overlay"></div>
         </div>
     );
 }

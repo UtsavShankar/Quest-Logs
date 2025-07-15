@@ -1,9 +1,17 @@
-body, button, input {
+:root {
   --highlight-color: #D8AF67;
   --secondary-color: #262626;
+  --font-stack: 'EB Garamond', 'Georgia', serif;
+}
+
+.theme-mission {
+  --highlight-color: rgb(120, 190, 255);
+}
+
+body, button, input {
   background-color: black;
   margin: 0;
-  font-family: 'EB Garamond', 'Georgia', serif;
+  font-family: var(--font-stack);
   font-weight: 400;
   font-size: 16px;
   color: white;
@@ -114,6 +122,20 @@ input.h2-input {
   text-align: center;
 }
 
+select {
+  font: var(--font-stack);
+  background: none;
+  border: 0.5px solid var(--highlight-color);
+  border-radius: 0.2rem;
+  color: white;
+  cursor: pointer;
+  outline: 0;
+}
+
+select:hover {
+  color: var(--highlight-color);
+}
+
 .tag-picker {
   position: absolute;
   top: 0;
@@ -133,7 +155,7 @@ input.h2-input {
   height: 35px;
   box-sizing: border-box;
   display: flex;
-  background-color: #262626;
+  background-color: var(--secondary-color);
   border: none;
   padding: 0.3rem;
 }
@@ -243,7 +265,7 @@ input.tag-search-input {
   pointer-events: none;
 }
 
-.video-overlay {
+.dark-overlay {
   position: absolute;
   top: 0;
   left: 0;
