@@ -15,21 +15,17 @@ import {
   writeBatch
 } from "firebase/firestore";
 import { DndContext, PointerSensor, useSensor, useSensors} from "@dnd-kit/core";
-import { SortableContext, arrayMove } from "@dnd-kit/sortable";
-import TodoItem from "./TodoItem";
-import TagPicker from "./Tags";
-import SettingsMenu from "./Settings"; 
-import { SettingsButton, SimpleButton } from "./Buttons";
-import TabList from "./TabList"
-import QuestDetailsPanel from "./QuestDetailsPanel.jsx";
-import { formatDate } from "../utils/dateUtils.js";
-import DatePicker from "./DatePicker.jsx";
+import { arrayMove } from "@dnd-kit/sortable";
+import QuestList from "./QuestList/QuestList.jsx";
+import SettingsMenu from "./Settings.jsx";
+import { SettingsButton, SimpleButton } from "./Buttons.jsx";
+import TabList from "./TabList.jsx"
+import QuestDetailsPanel from "./QuestDetailsPanel/QuestDetailsPanel.jsx";
 
 export default function TodoList({ user, settings, setSettings }) {
   const [todos, setTodos] = useState([]);
   const [shownTodos, setShownTodos] = useState([]);
   const [userTags, setUserTags] = useState([]);
-  const [newTask, setNewTask] = useState("");
   const sensors = useSensors(
     useSensor(PointerSensor, {
       activationConstraint: {
@@ -37,11 +33,6 @@ export default function TodoList({ user, settings, setSettings }) {
       }
     }
   ));
-  const [isAddingTag, setIsAddingTag] = useState(false);
-  const [tag, setTag] = useState(null);
-  const [isAddingDate, setIsAddingDate] = useState(false);
-  const [isNotifying, setIsNotifying] = useState(true);
-  const [deadline, setDeadline] = useState(null);
   const [settingsOpen, setSettingsOpen] = useState(false);
   const [userLists, setUserLists] = useState([]);
   const [activeList, setActiveList] = useState("all");
@@ -127,31 +118,6 @@ export default function TodoList({ user, settings, setSettings }) {
       loadQuestLists();
   }, [loadQuestLists]);
 
-  const addTodo = async () => {
-    if (!newTask.trim()) return;
-    const item = {
-      title: newTask,
-      completed: false,
-      createdAt: Date.now(),
-      sortOrder: todos.length,
-      deadline: deadline,
-      isNotifying:isNotifying,
-      tags: [tag],
-      description: "",
-    };
-    if (activeList !== "all" && activeList !== "completed") {
-      item.list = activeList;
-    }
-    await addDoc(collection(db, "users", user.uid, "todos"), item);
-    setNewTask("");
-    setTag("");
-    setDeadline(null);
-    setIsAddingTag(false);
-    setIsAddingDate(false);
-    setIsNotifying(true);
-    loadTodos();
-  };
-
   const updateTodo = async (id, newTitle, newTagId, newDeadline, newScheduledDate, newDescription, isNotifying) => {
      await updateDoc(doc(db, "users", user.uid, "todos", id), { 
       title: newTitle,
@@ -163,6 +129,11 @@ export default function TodoList({ user, settings, setSettings }) {
     });
     loadTodos();
   };
+
+  const addTodo = async (todo) => {
+    await addDoc(collection(db, "users", user.uid, "todos"), todo);
+    loadTodos();
+  }
 
   const deleteTodo = async (id) => {
     await deleteDoc(doc(db, "users", user.uid, "todos", id));
@@ -189,7 +160,6 @@ export default function TodoList({ user, settings, setSettings }) {
     const newList = userLists.find(t => t.id === over.id);
 
     if (newList) {
-      // Move todo to list
       moveTodoToList(active.id, over.id);
     } else {
       // Reorder todos
@@ -273,87 +243,6 @@ export default function TodoList({ user, settings, setSettings }) {
     )
   }
 
-  function TimelineView() {
-    const scheduledDates = [...new Set(todos.map(t => t.scheduledDate ? t.scheduledDate : null))].sort(function(a,b) {
-      if (!b) return -1;
-      if (!a) return 1;
-      return new Date(a) - new Date(b);
-    });
-
-    return (
-      scheduledDates.map(date => <div>
-          <h3 style={{ padding: "0 0 0 0.8rem" }}>{date ? formatDate(date) : "Upcoming"}</h3>
-          {
-            todos.filter(t => date ? t.scheduledDate === date : !t.scheduledDate)
-              .map(todo => <TodoItem
-                key={todo.id} 
-                  todo={todo}
-                  tagProps={{ userTags, addTag, deleteTag, updateTag }}
-                  onCompletedChange={completed => toggleCompleted(todo.id, completed)} 
-                  onClick={() => setOpenQuest(todo)}
-                  isOpen={openQuest && openQuest.id === todo.id}
-                />
-              )
-          }
-        </div>
-      )
-    )
-  }
-
-  function QuestList() {
-    return (
-      <div className="quest-list">
-          {activeList !== "timeline"
-          ? <SortableContext items={todos}>
-            <ul style={{listStyleType: "none", margin: 0, padding: 0}}>
-              {shownTodos.map((todo) => (
-                    <TodoItem
-                      key={todo.id} 
-                      todo={todo}
-                      tagProps={{ userTags, addTag, deleteTag, updateTag }}
-                      onCompletedChange={completed => toggleCompleted(todo.id, completed)} 
-                      onClick={() => setOpenQuest(todo)}
-                      isOpen={openQuest && openQuest.id === todo.id}
-                    />
-                  ))}
-            </ul>
-          </SortableContext>
-          : <TimelineView />}
-        <br />
-        <div style={{ position: 'relative', display: 'grid', gridTemplateColumns: "1fr auto", gap: '8px', alignItems: 'center', margin: "0 1em 0"}}>
-          <input className="text-input" value={newTask} placeholder="Enter new quest" onChange={(e) => setNewTask(e.target.value)} />
-          <button onClick={addTodo}>Add Quest</button>
-        </div>
-        <div style={{ display: "flex", gap: "1em", margin: "0.5em 1em 0.5em", position: "relative"}}>
-          <span>
-            {
-              !isAddingTag
-              ? tag
-                ? <span className="tag" onClick={() => setIsAddingTag(true)}>{tag.name}</span>
-                : <SimpleButton onClick={() => setIsAddingTag(true)}>Add Tag</SimpleButton>
-              : <TagPicker userId={user.uid} editTag={tag} tagProps={{ userTags, addTag, deleteTag, updateTag }} onUpdate={newTag => setTag(newTag)} endEdit={() => setIsAddingTag(false)}/>
-            }
-          </span>
-          <span>
-            {
-              !isAddingDate
-              ? <SimpleButton onClick={() => setIsAddingDate(true)}>{deadline ? formatDate(deadline) : "Add Date"}</SimpleButton>
-              : <DatePicker value={deadline || ""} 
-                  onChange={date => setDeadline(date)}
-                  onBlur={() => setIsAddingDate(false)}
-                  remindChecked={isNotifying}
-                  onRemindChange={e => {
-                    const notifying = e.target.checked;
-                    setIsNotifying(notifying)
-                  }}
-                />
-            }
-          </span>
-        </div>
-      </div>
-    )
-  }
-
   return (
     <div>
       <div style={{ padding: '1rem', minHeight: '45rem', boxSizing: "border-box", display: "flex", flexDirection: "column" }}>
@@ -363,7 +252,16 @@ export default function TodoList({ user, settings, setSettings }) {
         <DndContext onDragEnd={handleDragEnd} sensors={sensors}>
           <div style={{ display: 'flex', justifyContent: 'center', gap: '1rem', flex: 1, margin: '2rem 2rem 2rem' }}>
             <TabList userTabs={userLists} currentTab={activeList} setCurrentTab={activateList} addUserTab={addList} deleteUserTab={deleteList}/>
-            <QuestList />
+            <QuestList 
+              todos={todos}
+              activeList={activeList}
+              shownTodos={shownTodos}
+              tagProps={{ userTags, addTag, deleteTag, updateTag }}
+              toggleCompleted={toggleCompleted}
+              openQuest={openQuest}
+              setOpenQuest={setOpenQuest}
+              addTodoToDatabase={addTodo}
+            />
             {
               openQuest && <QuestDetailsPanel 
                 quest={openQuest} 

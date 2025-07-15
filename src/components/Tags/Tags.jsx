@@ -1,6 +1,6 @@
 import { useEffect, useState, useCallback, useRef } from "react";
-import TagItem from "./TagItem";
-import colours from "../data/tagData.js";;
+import TagItem from "./TagItem.jsx";
+import colours from "../../data/tagData.js";;
 
 export default function TagPicker({ editTag, tagProps, onUpdate, endEdit }) {
     const { userTags, addTag, deleteTag, updateTag } = tagProps;
