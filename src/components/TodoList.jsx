@@ -18,11 +18,12 @@ import { DndContext, PointerSensor, useSensor, useSensors} from "@dnd-kit/core";
 import { SortableContext, arrayMove } from "@dnd-kit/sortable";
 import TodoItem from "./TodoItem";
 import TagPicker from "./Tags";
-import SettingsMenu from "./Settings";
+import SettingsMenu from "./Settings"; 
 import { SettingsButton, SimpleButton } from "./Buttons";
 import TabList from "./TabList"
 import QuestDetailsPanel from "./QuestDetailsPanel.jsx";
 import { formatDate } from "../utils/dateUtils.js";
+import DatePicker from "./DatePicker.jsx";
 
 export default function TodoList({ user, settings, setSettings }) {
   const [todos, setTodos] = useState([]);
@@ -39,6 +40,7 @@ export default function TodoList({ user, settings, setSettings }) {
   const [isAddingTag, setIsAddingTag] = useState(false);
   const [tag, setTag] = useState(null);
   const [isAddingDate, setIsAddingDate] = useState(false);
+  const [isNotifying, setIsNotifying] = useState(true);
   const [deadline, setDeadline] = useState(null);
   const [settingsOpen, setSettingsOpen] = useState(false);
   const [userLists, setUserLists] = useState([]);
@@ -133,6 +135,7 @@ export default function TodoList({ user, settings, setSettings }) {
       createdAt: Date.now(),
       sortOrder: todos.length,
       deadline: deadline,
+      isNotifying:isNotifying,
       tags: [tag],
       description: "",
     };
@@ -145,16 +148,18 @@ export default function TodoList({ user, settings, setSettings }) {
     setDeadline(null);
     setIsAddingTag(false);
     setIsAddingDate(false);
+    setIsNotifying(true);
     loadTodos();
   };
 
-  const updateTodo = async (id, newTitle, newTagId, newDeadline, newScheduledDate, newDescription) => {
+  const updateTodo = async (id, newTitle, newTagId, newDeadline, newScheduledDate, newDescription, isNotifying) => {
      await updateDoc(doc(db, "users", user.uid, "todos", id), { 
       title: newTitle,
       tags: newTagId ? [newTagId] : [],
       deadline: newDeadline,
       scheduledDate: newScheduledDate ?? null,
-      description: newDescription
+      description: newDescription,
+      isNotifying: isNotifying ?? false
     });
     loadTodos();
   };
@@ -332,8 +337,16 @@ export default function TodoList({ user, settings, setSettings }) {
           <span>
             {
               !isAddingDate
-              ? <SimpleButton value={tag || ""} onClick={() => setIsAddingDate(true)}>Add Date</SimpleButton>
-              : <input type="date" value={deadline || ""} onChange={(e) => setDeadline(e.target.value)}/>
+              ? <SimpleButton onClick={() => setIsAddingDate(true)}>{deadline ? formatDate(deadline) : "Add Date"}</SimpleButton>
+              : <DatePicker value={deadline || ""} 
+                  onChange={date => setDeadline(date)}
+                  onBlur={() => setIsAddingDate(false)}
+                  remindChecked={isNotifying}
+                  onRemindChange={e => {
+                    const notifying = e.target.checked;
+                    setIsNotifying(notifying)
+                  }}
+                />
             }
           </span>
         </div>

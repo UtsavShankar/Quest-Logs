@@ -40,6 +40,15 @@ input[type="date"]::-webkit-calendar-picker-indicator {
   filter: invert(1);
 }
 
+.date-input {
+  box-sizing: border-box !important;
+  padding: 0 !important;
+}
+
+.date-clear-button::after {
+  background: grey !important;
+}
+
 input[type="checkbox"] {
   appearance: none;
   width: 12px;
@@ -150,6 +159,7 @@ input.tag-search-input {
   border-radius: 0.1rem;
   padding: 0.05rem 0.5rem 0.05rem;
   align-items: center;
+  align-self: flex-start;
 }
 
 .tag-edit-menu {
