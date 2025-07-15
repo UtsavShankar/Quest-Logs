@@ -23,6 +23,7 @@ import { SettingsButton, SimpleButton } from "./Buttons";
 import TabList from "./TabList"
 import QuestDetailsPanel from "./QuestDetailsPanel.jsx";
 import { formatDate } from "../utils/dateUtils.js";
+import DatePicker from "./DatePicker.jsx";
 
 export default function TodoList({ user, settings, setSettings }) {
   const [todos, setTodos] = useState([]);
@@ -336,16 +337,16 @@ export default function TodoList({ user, settings, setSettings }) {
           <span>
             {
               !isAddingDate
-              ? <SimpleButton value={tag || ""} onClick={() => setIsAddingDate(true)}>Add Date</SimpleButton>
-              : <input type="date" value={deadline || ""} onChange={(e) => setDeadline(e.target.value)}/>
-            }
-          </span>
-          {/* ADDING NOTIFICATION TOGGLE  */}
-          <span>
-            {
-              isNotifying
-              ? <SimpleButton value={tag || ""} onClick={() => setIsNotifying(false)}>NOTIFICATIONS ON</SimpleButton>
-              : <SimpleButton onClick={() => setIsNotifying(true)}>NOTIFICATIONS OFF</SimpleButton>
+              ? <SimpleButton onClick={() => setIsAddingDate(true)}>{deadline ? formatDate(deadline) : "Add Date"}</SimpleButton>
+              : <DatePicker value={deadline || ""} 
+                  onChange={date => setDeadline(date)}
+                  onBlur={() => setIsAddingDate(false)}
+                  remindChecked={isNotifying}
+                  onRemindChange={e => {
+                    const notifying = e.target.checked;
+                    setIsNotifying(notifying)
+                  }}
+                />
             }
           </span>
         </div>

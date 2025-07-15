@@ -4,6 +4,8 @@ import { SimpleButton } from "./Buttons";
 import DescriptionBox from "./DescriptionBox";
 import tagColours from "../data/tagData.js";
 import { formatDate } from "../utils/dateUtils.js";
+import DatePicker from "./DatePicker.jsx";
+import "./Buttons.css";
 
 export default function QuestDetailsPanel({ quest, onUpdate, onDelete, tagProps }) {
     const { userTags } = tagProps;
@@ -40,7 +42,7 @@ export default function QuestDetailsPanel({ quest, onUpdate, onDelete, tagProps 
         setDeadline(quest.deadline);
         setDescription(quest.description);
         setScheduledDate(quest.scheduledDate);
-        setIsNotifying(quest.isNotifying || true);
+        setIsNotifying(quest.isNotifying || false);
     }, [getTag, quest]);
 
     useEffect(() => {
@@ -62,31 +64,6 @@ export default function QuestDetailsPanel({ quest, onUpdate, onDelete, tagProps 
         onUpdate(quest.id, quest.title, tag ? tag.id : null, deadline, newScheduledDate, quest.description, isNotifying);
     const updateisNotifying = (newisNotifying) => 
         onUpdate(quest.id, quest.title, tag ? tag.id : null, deadline, scheduledDate, quest.description, newisNotifying);
-
-    function DatePicker({ value, onChange }) {
-        const ref = useRef();
-        
-        useEffect(() => {
-            const handler = (event) => {
-                if (ref.current && !ref.current.contains(event.target)) {
-                    setIsEditingDate(false);
-                }
-            }
-            
-            const timeout = setTimeout(() => {
-                document.addEventListener("click", handler);
-            }, 0);
-
-            return () => {
-                clearTimeout(timeout);
-                document.removeEventListener("click", handler);
-            }
-        }, []);
-
-        return (
-            <input ref={ref} type="date" value={value} style={{ width: "100px" }} onChange={onChange}/>
-        )
-    }
 
     function MetaRow() {
         let daysRemaining = "";
@@ -120,12 +97,20 @@ export default function QuestDetailsPanel({ quest, onUpdate, onDelete, tagProps 
 
                     {
                         isEditingDate
-                        ? <DatePicker value={deadline} onChange={(e) => {
-                            const newDeadline = e.target.value;
-                            setDeadline(newDeadline);
-                            setIsEditingDate(false);
-                            updateDeadline(newDeadline);
-                          }}/>
+                        ? <DatePicker value={deadline} 
+                            onChange={(date) => {
+                                setDeadline(date);
+                                setIsEditingDate(false);
+                                updateDeadline(date);
+                            }}
+                            onBlur={() => setIsEditingDate(false)}
+                            remindChecked={isNotifying}
+                            onRemindChange={e => {
+                                const notifying = e.target.checked;
+                                setIsNotifying(notifying);
+                                updateisNotifying(notifying);
+                            }}
+                          />
                         : deadline
                         ? <SimpleButton onClick={() => setIsEditingDate(true)}>{formatDate(deadline)}</SimpleButton>
                         : <SimpleButton style={{ color: "gray" }} onClick={() => setIsEditingDate(true)}>Add Deadline</SimpleButton>
@@ -138,61 +123,24 @@ export default function QuestDetailsPanel({ quest, onUpdate, onDelete, tagProps 
                     <span style={{ margin: "0.5rem" }}>
                     {
                         isEditingScheduledDate
-                        ? <DatePicker value={scheduledDate} onChange={e => {
-                            const newScheduledDate = e.target.value
-                            setScheduledDate(newScheduledDate);
-                            setIsEditingScheduledDate(false);
-                            updateScheduledDate(newScheduledDate);
-                          }} />
+                        ? <DatePicker value={scheduledDate} 
+                            onChange={date => {
+                                setScheduledDate(date);
+                                setIsEditingScheduledDate(false);
+                                updateScheduledDate(date);
+                            }}
+                            onBlur={() => setIsEditingScheduledDate(false)}
+                            showRemind={false}
+                          />
                         : scheduledDate
                         ? <button className="simple-button" onClick={() => setIsEditingScheduledDate(true)}>{formatDate(scheduledDate)}</button>
                         : <button style={{ color: "gray" }} className="simple-button" onClick={() => setIsEditingScheduledDate(true)}>Add Date</button>
-                    }
-                    </span>
-                                     <span style={{ margin: "0.5rem" }}>
-                    {
-                        isNotifying
-                        ? <SimpleButton value={tag || ""} onClick={() => { setIsNotifying(false); updateisNotifying(false); }}>NOTIFICATIONS ON</SimpleButton>
-                        : <SimpleButton onClick={() => { setIsNotifying(true); updateisNotifying(true); }}>NOTIFICATIONS OFF</SimpleButton>
                     }
                     </span>
                 </div>
             </div>
         )
     }
-
-    // setting timeout for when the deadline expires, reloads every time deadline value is updated, pretty efficient
-    useEffect(() => {
-        let timer;
-
-        if (quest.deadline) {
-            const deadlineDate = new Date(quest.deadline);
-            const now = new Date();
-            const timeout = deadlineDate.getTime() - now.getTime();
-
-            console.log("Timeout for deadline:", timeout, now, deadlineDate);
-
-            if (timeout > 0) {
-                const scheduleNotification = () => {
-                timer = setTimeout(() => {
-                        new window.Notification(quest.title, { body: "Your quest has expired! You made a valiant effort!" });         
-                    }, timeout); // 5 second for testing, change to timeout for deadline
-                }
-
-                if (Notification.permission === "granted") {
-                    scheduleNotification();
-                } else if (Notification.permission !== "denied") {
-                    Notification.requestPermission().then(permission => {
-                        if (permission === "granted") {
-                        scheduleNotification();
-                        }
-                    });
-                }
-            }
-        }
-        
-        return () => clearTimeout(timer);
-    }, [deadline, quest.deadline, quest.title]);
 
     const titleRef = useRef(null);
 
@@ -214,14 +162,15 @@ export default function QuestDetailsPanel({ quest, onUpdate, onDelete, tagProps 
 
     return(
         <div className="quest-details-panel">
-            <SimpleButton onClick={() => setDropdownIsShowing(!dropdownIsShowing)} style={{ marginLeft: "auto", position: "relative" }}>
+            <div className="simple-button" onClick={() => setDropdownIsShowing(!dropdownIsShowing)} 
+                style={{ marginLeft: "auto", position: "relative", cursor:"pointer" }}>
                 ...
                 {
                     dropdownIsShowing && <button 
                         className="delete-button"
                         onClick={() => onDelete(quest.id)}>Delete</button>
                 }
-            </SimpleButton>
+            </div>
             <input ref={titleRef}
                 className="h2-input" 
                 value={title}
