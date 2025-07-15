@@ -4,6 +4,8 @@ import TodoItem from "./TodoItem";
 import TimelineView from "./TimelineView";
 import TagPicker from "../Tags/Tags";
 import "../Buttons.css";
+import DatePicker from "../DatePicker";
+import { formatDate } from "../../utils/dateUtils";
 
 export default function QuestList({ todos, activeList, shownTodos, tagProps, toggleCompleted, openQuest, setOpenQuest, addTodoToDatabase }) {
     const { userTags, addTag, deleteTag, updateTag } = tagProps;
@@ -12,6 +14,7 @@ export default function QuestList({ todos, activeList, shownTodos, tagProps, tog
     const [tag, setTag] = useState(null);
     const [isAddingDate, setIsAddingDate] = useState(false);
     const [deadline, setDeadline] = useState(null);
+    const [isNotifying, setIsNotifying] = useState(true);
     
     const addTodo = async () => {
         if (!newTask.trim()) return;
@@ -21,6 +24,7 @@ export default function QuestList({ todos, activeList, shownTodos, tagProps, tog
             createdAt: Date.now(),
             sortOrder: todos.length,
             deadline: deadline,
+            isNotifying: isNotifying,
             tags: [tag],
             description: "",
         };
@@ -32,6 +36,7 @@ export default function QuestList({ todos, activeList, shownTodos, tagProps, tog
         setDeadline(null);
         setIsAddingTag(false);
         setIsAddingDate(false);
+        setIsNotifying(true);
         addTodoToDatabase(item);
     };
 
@@ -75,9 +80,17 @@ export default function QuestList({ todos, activeList, shownTodos, tagProps, tog
             </span>
             <span>
             {
-                !isAddingDate
-                ? <button className="simple-button" value={tag || ""} onClick={() => setIsAddingDate(true)}>Add Date</button>
-                : <input type="date" value={deadline || ""} onChange={(e) => setDeadline(e.target.value)}/>
+              !isAddingDate
+              ? <button className="simple-button" onClick={() => setIsAddingDate(true)}>{deadline ? formatDate(deadline) : "Add Date"}</button>
+              : <DatePicker value={deadline || ""} 
+                  onChange={date => setDeadline(date)}
+                  onBlur={() => setIsAddingDate(false)}
+                  remindChecked={isNotifying}
+                  onRemindChange={e => {
+                    const notifying = e.target.checked;
+                    setIsNotifying(notifying)
+                  }}
+                />
             }
             </span>
         </div>
