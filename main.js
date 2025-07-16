@@ -77,13 +77,9 @@ function createWindow() {
   });
 }
 
-//! NEED TO DO PERMISSION LOGIC 
 function scheduleNotification(todo) {
   if (!todo.deadline || !todo.isNotifying){
     // console.log("No deadline or not notifying, skipping notification for", todo.title);
-    if(!todo.isNotifying) {
-      console.log("Skipping notification for", todo.title);
-    }
     return
   }; // skip if no deadline or not notifying
 
