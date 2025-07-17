@@ -1,6 +1,7 @@
 import { useState, useEffect, useRef } from "react";
 import { createPortal } from "react-dom";
 import "../Buttons.css";
+import {ReactComponent as DeleteIcon} from '../../assets/icon-delete.svg';
 
 export default function TagItem({ tag, colours, onClick, onUpdate, onDelete, menuRef }) {
     const [currentColour, setCurrentColour] = useState("grey");
@@ -16,7 +17,7 @@ export default function TagItem({ tag, colours, onClick, onUpdate, onDelete, men
     function ColourButton({ colour }) {
         const active = currentColour === colour.id;
         return (
-            <button style={{ display: "flex", alignItems: "center", padding: "0.2rem 0 0.2rem", color: `${active && "var(--highlight-color)"}` }}
+            <button style={{ display: "flex", alignItems: "center", justifyContent: "space-between", padding: "0.2rem 0 0.2rem", color: `${active && "var(--highlight-color)"}` }}
                 onClick={() => {
                     setCurrentColour(colour.id);
                     onUpdate(tag.id, tag.name, colour.id);
@@ -24,7 +25,7 @@ export default function TagItem({ tag, colours, onClick, onUpdate, onDelete, men
             >
                 <span style={{ backgroundColor: colour.background }} className="tag-colour-swatch"/>
                 <span style={{ width: "5rem" }}>{colour.label}</span>
-                {active && <span style={{ margin: "0 0.5rem 0" }}>✓</span>}
+                <span style={{ margin: "0 0.5rem 0", visibility: active ? "visible" : "hidden" }}>✓</span>
             </button>
         )
     }
@@ -59,7 +60,10 @@ export default function TagItem({ tag, colours, onClick, onUpdate, onDelete, men
                     <input type="text" className="tag-edit-input" value={editName}
                         onChange={e => setEditName(e.target.value)}
                         autoFocus="autofocus" onKeyDown={handleInputKeyDown}/>
-                    <button onClick={() => onDelete(tag.id)}>Delete</button>
+                    <button style={{ display: "inline-flex", alignItems: "center", padding: "0.2rem 0.2rem 0.2rem" }} onClick={() => onDelete(tag.id)}>
+                        <DeleteIcon className="icon" style={{ margin: "0 0.3rem 0" }}/>
+                        Delete
+                    </button>
                 </div>
                 <hr style={{ width: "90%", height: "1px", border: 0, backgroundColor: "gray" }}/>
                 <span className="menu-text">Colours</span>

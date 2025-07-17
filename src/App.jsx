@@ -84,15 +84,6 @@ function App() {
     })
   }, [settings.dynamicBG, settings.fireCrackling, settings.wind]);
 
-  useEffect(() => {
-    const root = document.documentElement;
-    if (settings.theme === "mission") {
-      root.classList.add("theme-mission");
-    } else {
-      root.classList.remove("theme-mission");
-    }
-  }, [settings.theme])
-
   return (
     <ThemeProvider initialTheme={settings.theme}>
       <div>

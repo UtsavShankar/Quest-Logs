@@ -18,7 +18,7 @@ import { DndContext, PointerSensor, useSensor, useSensors} from "@dnd-kit/core";
 import { arrayMove } from "@dnd-kit/sortable";
 import QuestList from "./QuestList/QuestList.jsx";
 import SettingsMenu from "./Settings.jsx";
-import { SettingsButton, SimpleButton } from "./Buttons.jsx";
+import { SettingsButton } from "./Buttons.jsx";
 import TabList from "./TabList.jsx"
 import QuestDetailsPanel from "./QuestDetailsPanel/QuestDetailsPanel.jsx";
 import { useTheme } from "../ThemeContext.js";
@@ -240,7 +240,12 @@ export default function TodoList({ user, settings, setSettings }) {
     return (
       <div style={{display: 'flex', justifyContent: 'space-between'}}>
         <SettingsButton onClick={() => setSettingsOpen(true)} />
-        <SimpleButton onClick={handleLogout}>Log out</SimpleButton>
+        <button className="simple-button" 
+          style={{ fontFamily: "var(--subheading-font)", fontSize: "15px" }}
+          onClick={handleLogout}
+        >
+          Log out
+        </button>
       </div>
     )
   }

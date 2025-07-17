@@ -1,32 +1,171 @@
+/* Fonts */
+@import url('https://fonts.googleapis.com/css2?family=Cinzel&family=Cinzel+Decorative:wght@400;700&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Tomorrow:ital,wght@0,100;0,200;0,300;0,400;0,500;0,600;0,700;0,800;0,900;1,100;1,200;1,300;1,400;1,500;1,600;1,700;1,800;1,900&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@300..700&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Manrope:wght@200..800&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Crimson+Text:ital,wght@0,400;0,600;0,700;1,400;1,600;1,700&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Cormorant+SC:wght@300;400;500;600;700&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Elsie+Swash+Caps:wght@400;900&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Simonetta:ital,wght@0,400;0,900;1,400;1,900&display=swap');
+
+@font-face {
+  font-family: 'Piston Black';
+  src: local('Piston Black'), url(./assets/PistonBlack-Regular.ttf) format('truetype');
+}
+
+/* Main */
 :root {
   --highlight-color: #D8AF67;
+  --medium-highlight-color: #7C643C;
+  --dark-highlight-color: rgba(124, 100, 60, 0.5);
   --secondary-color: #262626;
   --font-stack: 'EB Garamond', 'Georgia', serif;
+  --font-size: 16px;
+
+  --h1-font-size: 2rem;
+
+  --heading-font: "Cinzel Decorative", serif;
+  --heading-font-weight: 700;
+  --heading-letter-spacing: 0.5rem;
+  --heading-color: #eccd99;
+  --heading-text-shadow:
+    0.1rem 0.1rem 0 rgb(89, 59, 11),
+    0 0 0.3rem rgb(255, 157, 0),
+    0 0 1rem rgb(212, 140, 24);
+
+  --subheading-font: "Cinzel", serif;
+  --subheading-font-weight: 400;
+  --subheading-color: #ffe0ac;
+  --subheading-text-shadow:
+    0 0 0.3rem rgb(255, 157, 0),
+    0 0 1rem rgb(212, 140, 24);
+
+  --checkbox-inner-box-shadow: rgb(255, 187, 78);
+  --checkbox-outer-box-shadow: rgb(255, 187, 78, 0.5);
+
+  --hover-color: #d2d2d2;
+  --border-color: gray;
 }
 
 .theme-mission {
-  --highlight-color: rgb(120, 190, 255);
+  --font-stack: "Manrope", sans-serif;
+  --font-weight: 400;
+  --font-size: 0.9rem;
+
+  --highlight-color: rgb(233, 64, 64);
+  --medium-highlight-color: rgb(164, 39, 39);
+  --dark-highlight-color: rgb(61, 18, 18);
+  /* --highlight-color: rgb(120, 190, 255); */
+  /* --medium-highlight-color: rgb(63, 108, 150); */
+  /* --dark-highlight-color: rgb(37, 61, 83); */
+
+  --h1-font-size: 2rem;
+
+  --heading-font: "Tomorrow", sans-serif;
+  --heading-font-weight: 700;
+  --heading-letter-spacing: 0.4rem;
+  --heading-color: white;
+  --heading-text-shadow:
+    0 0 0.2rem white,
+    0 0 1rem white;
+  --heading-text-transform: uppercase;
+
+  --subheading-font: "Tomorrow", sans-serif;
+  --subheading-font-weight: 300;
+  --subheading-selected-font-weight: 400;
+  --subheading-letter-spacing: 0;
+  --subheading-color: rgb(255, 255, 255);
+  --subheading-text-shadow:
+    0 0 0.2rem white,
+    0 0 1rem white;
+  --subheading-text-transform: uppercase;
+
+  --label-font-weight: 500;
+  --label-text-transform: uppercase;
+
+  --checkbox-inner-box-shadow: rgb(217, 51, 51);
+  --checkbox-outer-box-shadow: rgba(255, 78, 78, 0.5);
+  /* --checkbox-inner-box-shadow: rgb(51, 162, 217);
+  --checkbox-outer-box-shadow: rgba(78, 208, 255, 0.5); */
+
+  --hover-color: rgb(176, 217, 255);
+}
+
+.theme-enchantment {
+  --font-stack: "Simonetta", "Crimson Text", serif;
+  --font-weight: 400;
+  --highlight-color: #e7a780;
+  --medium-highlight-color: #d38d79;
+  --dark-highlight-color: #073a39;
+
+  --h1-font-size: 3rem;
+
+  --heading-font: "Cormorant SC", serif;
+  --heading-font-weight: 700;
+  --heading-letter-spacing: 0;
+  --heading-color: #ffffff;
+  --heading-text-shadow:
+    0.1rem 0.1rem 0 #3f7958,
+    0 0 0.3rem #00540d,
+    0 0 1rem #003a03;
+    /* 0 0 0.3rem rgb(255, 0, 166),
+    0 0 1rem rgb(212, 24, 187); */
+
+  --subheading-font: "Cormorant SC", serif;
+  --subheading-font-weight: 400;
+  --subheading-selected-font-weight: 700;
+  --subheading-letter-spacing: 0;
+  --subheading-color: #f2ccb5;
+  --subheading-text-shadow:
+    0 0 0.2rem rgb(15, 47, 19),
+    0 0 0.3rem #54ff77,
+    0 0 1rem #008636;
+
+  --border-color: var(--highlight-color);
 }
 
 body, button, input {
   background-color: black;
   margin: 0;
   font-family: var(--font-stack);
-  font-weight: 400;
-  font-size: 16px;
+  font-weight: var(--font-weight);
+  font-size: var(--font-size);
   color: white;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
 }
 
-h1, h2, h3 {
-  font-weight: 400;
-  color: var(--highlight-color);
+h1 {
+  font-family: var(--heading-font);
+  font-weight: var(--heading-font-weight);
+  letter-spacing: var(--heading-letter-spacing);
+  background: var(--heading-background);
+  background-clip: var( --heading-background-clip);
+  color: var(--heading-color);
+  text-shadow: var(--heading-text-shadow);
+  text-transform: var(--heading-text-transform);
+  font-size: var(--h1-font-size);
+  line-height: 1;
+  margin-block: 1rem;
+}
+
+h2, h3 {
+  font-family: var(--subheading-font);
+  font-weight: var(--subheading-selected-font-weight);
+  text-transform: var(--subheading-text-transform);
+  color: var(--subheading-color);
+  text-shadow: var(--subheading-text-shadow);
 }
 
 h3 {
   margin: 0.2em 0 0.2em;
   font-size: 16px;
+}
+
+.label {
+  font-family: var(--label-font);
+  font-weight: var(--label-font-weight);
+  text-transform: var(--label-text-transform);
 }
 
 button {
@@ -72,6 +211,13 @@ input[type="checkbox"]:checked::before {
   position: absolute;
   inset: 2px;
   background-color: var(--highlight-color);
+  box-shadow:
+    0 0 0.3rem var(--checkbox-inner-box-shadow);
+}
+
+input[type="checkbox"]:checked {
+  box-shadow:
+    0 0 0.7rem var(--checkbox-outer-box-shadow);
 }
 
 input[type="range"] {
@@ -108,12 +254,15 @@ input:not([type]), input[type="text"], input[type="password"]
 
 input.text-input {
   background-color: rgba(0, 0, 0, 0.75);
-  border: 1px solid #7C643C;
+  border: 1px solid var(--medium-highlight-color);
   padding: 2px 8px 2px;
 }
 
 input.h2-input {
   font-size: 1.5em;
+  font-family: var(--label-font);
+  font-weight: var(--label-font-weight);
+  text-transform: var(--label-text-transform);
   background: none;
   border: none;
   outline: none;
@@ -133,7 +282,7 @@ select {
 }
 
 select:hover {
-  color: var(--highlight-color);
+  color: var(--hover-color);
 }
 
 .tag-picker {
@@ -182,6 +331,9 @@ input.tag-search-input {
   padding: 0.05rem 0.5rem 0.05rem;
   align-items: center;
   align-self: flex-start;
+  font-family: var(--label-font);
+  font-weight: var(--label-font-weight);
+  text-transform: var(--label-text-transform);
 }
 
 .tag-edit-menu {
@@ -197,6 +349,7 @@ input.tag-search-input {
   background: rgba(70, 70, 70, 1);
   border: none;
   border-radius: 0.5rem;
+  margin: 0 0 0.3rem;
 }
 
 .tag-options {
@@ -337,13 +490,23 @@ input.tag-search-input {
 
 .side-button {
   all: unset;
-  font-size: 20px;
+  font-size: 17px;
+  font-family: var(--subheading-font);
+  text-transform: var(--subheading-text-transform);
+  font-weight: var(--subheading-font-weight);
+  letter-spacing: var(--subheading-letter-spacing);
   text-align: right;
   cursor: pointer;
 }
 
+.side-button:hover {
+  color: var(--hover-color);
+}
+
 .side-button.selected {
-  color: var(--highlight-color);
+  color: var(--subheading-color);
+  text-shadow: var(--subheading-text-shadow);
+  font-weight: var(--subheading-selected-font-weight);
 }
 
 .options {
@@ -375,7 +538,7 @@ input.tag-search-input {
 .quest-list {
   width: 22rem;
   background: rgba(0, 0, 0, 0.75);
-  border: solid gray 1px;
+  border: solid var(--border-color) 1px;
   padding: 1rem 0 1rem;
 }
 
@@ -388,14 +551,20 @@ input.tag-search-input {
 
 .todo-item.selected {
   background: #7C643C;
-  background: linear-gradient(90deg,rgba(124, 100, 60, 0.5) 0%, rgba(0, 0, 0, 0) 100%);
+  background: linear-gradient(90deg,var(--dark-highlight-color) 0%, rgba(0, 0, 0, 0) 100%);
   outline: solid var(--highlight-color) 1px;
+}
+
+.todo-item-title {
+  font-family: var(--label-font);
+  font-weight: var(--label-font-weight);
+  text-transform: var(--label-text-transform);
 }
 
 .quest-details-panel {
   background: rgba(0, 0, 0, 0.75);
   padding: 0.5rem 1rem 1rem;
-  border: solid gray 1px;
+  border: solid var(--border-color) 1px;
   width: 20rem;
   display: flex;
   flex-direction: column;
@@ -411,7 +580,7 @@ input.tag-search-input {
   width: 10rem;
   background: rgba(0, 0, 0, 0.75);
   padding: 0.5rem;
-  border: solid gray 1px;
+  border: solid var(--border-color) 1px;
 }
 
 .add-button {
@@ -473,6 +642,16 @@ input.tag-search-input {
       color: var(--highlight-color);
     }
   }
+}
+
+.icon, .icon-button {
+  fill: white;
+  height: 1rem;
+  width: auto;
+}
+
+.icon-button:hover {
+  fill: var(--highlight-color);
 }
 
 code {

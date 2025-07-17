@@ -32,6 +32,7 @@
     height: 38px;
     width: 130px;
     margin: 0 15px 0;
+    text-transform: var(--label-text-transform); 
 }
 
 .button-region.settings {
@@ -56,6 +57,7 @@
     border: none;
     text-shadow: 0 0 4px black;
     padding: 0;
+    text-transform: var(--label-text-transform); 
 }
 
 .simple-button:hover {

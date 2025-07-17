@@ -1,19 +1,14 @@
 import { useState, useEffect } from "react";
 import { useTheme } from "../ThemeContext";
+import themeData from "../data/themes.js";
 
 export default function SettingsMenu({ closeMenu, settings, setSettings }) {
     const [currentSection, setCurrentSection] = useState("preferences");
 
-    const themes = [
-        {
-            key: "quest",
-            name: "Quest"
-        },
-        {
-            key: "mission",
-            name: "Mission"
-        }
-    ]
+    const themes = themeData.map(t => ({
+        key: t.id,
+        name: t.name
+    }));
 
     const preferencesOptions = [
         {

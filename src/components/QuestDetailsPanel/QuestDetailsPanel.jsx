@@ -116,7 +116,7 @@ export default function QuestDetailsPanel({ quest, onUpdate, onDelete, tagProps 
                         : <SimpleButton style={{ color: "gray" }} onClick={() => setIsEditingDate(true)}>Add Deadline</SimpleButton>
                     }
 
-                    <span style={{ whiteSpace: 'pre' }}>{daysRemaining}</span>
+                    <span className="label" style={{ whiteSpace: 'pre', alignSelf: "center" }}>{daysRemaining}</span>
                 </div>
                 <div style={{ padding: "0.5rem" }}>
                     <span>Do on:</span>
