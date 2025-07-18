@@ -4,6 +4,8 @@ import { onAuthStateChanged } from 'firebase/auth';
 import AuthForm from "./components/AuthForm";
 import QuestLog from "./components/QuestLog.jsx";
 import BackgroundVideo from './components/Background';
+import { doc, getDoc, updateDoc } from "firebase/firestore";
+import { db } from "./firebase"; // adjust path as needed
 import { ThemeProvider } from './ThemeContext.js';
 
 function App() {
@@ -23,6 +25,56 @@ function App() {
   useEffect(() => {
     return onAuthStateChanged(auth, (u) => setUser(u));
   }, []);
+
+  //loads user settings from Firestore
+  useEffect(() => {
+    //if logged in, fetch user settings
+    if (user) {
+      const fetchSettings = async () => {
+        const userRef = doc(db, "users", user.uid);
+        const userDoc = await getDoc(userRef);
+        console.log(userDoc.data().setting);
+         //if user settings exist, set them, else set default settings
+        if (userDoc.exists()) {
+          setSettings(userDoc.data().setting || {
+            dynamicBG: true,
+            ambienceVolume: 50,
+            fireCrackling: true,
+            wind: true
+          });
+        } else {
+          setSettings({
+            dynamicBG: true,
+            ambienceVolume: 50,
+            fireCrackling: true,
+            wind: true
+          });
+        }
+      };
+      fetchSettings();
+    }
+
+
+  },[user]);
+
+  //update database if settings change
+  useEffect(() => {
+  // Only update if user is logged in (and settings is not null/undefined)
+  if (user) {
+    const updateSettings = async () => {
+      const userRef = doc(db, "users", user.uid);
+      try {
+        await updateDoc(userRef, { setting: settings });
+        console.log("Settings updated successfully", settings);
+      } catch (e) {
+        // Optionally handle errors (e.g., permissions)
+        console.error("Failed to update settings:", e);
+      }
+    };
+    updateSettings();
+  }
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+}, [settings]);
 
   useEffect(() => {
     const onFirstClick = () => setHasInteracted(true);
