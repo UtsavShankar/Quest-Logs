@@ -1,5 +1,4 @@
 import { useState, useEffect } from "react";
-import { useTheme } from "../ThemeContext";
 import themeData from "../data/themes.js";
 
 export default function SettingsMenu({ closeMenu, settings, setSettings }) {
@@ -112,12 +111,6 @@ export default function SettingsMenu({ closeMenu, settings, setSettings }) {
             };
         });
     }, [settings]);
-
-    const { setTheme } = useTheme();
-
-    useEffect(() => {
-        setTheme(settings.theme);
-    }, [settings.theme, setTheme])
 
     return (
         <div className="settings-wrapper">

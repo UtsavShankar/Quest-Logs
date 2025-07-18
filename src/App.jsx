@@ -8,15 +8,18 @@ import { doc, getDoc, updateDoc } from "firebase/firestore";
 import { db } from "./firebase"; // adjust path as needed
 import { ThemeProvider } from './ThemeContext.js';
 
+const defaultSettings = {
+  dynamicBG: true,
+  ambienceVolume: 50,
+  fireCrackling: true,
+  wind: true,
+  theme: "quest"
+}
+const loginFormSettings = JSON.parse(localStorage.getItem("settings")) || defaultSettings;
+
 function App() {
   const [user, setUser] = useState(null);
-  const [settings, setSettings] = useState({
-        dynamicBG: true,
-        ambienceVolume: 50,
-        fireCrackling: true,
-        wind: true,
-        theme: "quest"
-  })
+  const [settings, setSettings] = useState(defaultSettings);
   const fireCracklingRef = useRef(null);
   const windRef = useRef(null);
   const [hasInteracted, setHasInteracted] = useState(false);
@@ -33,48 +36,35 @@ function App() {
       const fetchSettings = async () => {
         const userRef = doc(db, "users", user.uid);
         const userDoc = await getDoc(userRef);
-        console.log(userDoc.data().setting);
          //if user settings exist, set them, else set default settings
         if (userDoc.exists()) {
-          setSettings(userDoc.data().setting || {
-            dynamicBG: true,
-            ambienceVolume: 50,
-            fireCrackling: true,
-            wind: true
-          });
+          setSettings(userDoc.data().setting || defaultSettings);
         } else {
-          setSettings({
-            dynamicBG: true,
-            ambienceVolume: 50,
-            fireCrackling: true,
-            wind: true
-          });
+          setSettings(defaultSettings);
         }
       };
       fetchSettings();
     }
-
-
-  },[user]);
+  }, [user]);
 
   //update database if settings change
   useEffect(() => {
-  // Only update if user is logged in (and settings is not null/undefined)
-  if (user) {
-    const updateSettings = async () => {
-      const userRef = doc(db, "users", user.uid);
-      try {
-        await updateDoc(userRef, { setting: settings });
-        console.log("Settings updated successfully", settings);
-      } catch (e) {
-        // Optionally handle errors (e.g., permissions)
-        console.error("Failed to update settings:", e);
-      }
-    };
-    updateSettings();
-  }
-  // eslint-disable-next-line react-hooks/exhaustive-deps
-}, [settings]);
+    // Only update if user is logged in (and settings is not null/undefined)
+    if (user) {
+      const updateSettings = async () => {
+        const userRef = doc(db, "users", user.uid);
+        try {
+          await updateDoc(userRef, { setting: settings });
+          console.log("Settings updated successfully", settings);
+        } catch (e) {
+          // Optionally handle errors (e.g., permissions)
+          console.error("Failed to update settings:", e);
+        }
+      };
+      updateSettings();
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [settings]);
 
   useEffect(() => {
     const onFirstClick = () => setHasInteracted(true);
@@ -137,7 +127,7 @@ function App() {
   }, [settings.dynamicBG, settings.fireCrackling, settings.wind]);
 
   return (
-    <ThemeProvider initialTheme={settings.theme}>
+    <ThemeProvider initialTheme={loginFormSettings.theme}>
       <div>
         {settings.dynamicBG && <BackgroundVideo />}
         {!user ? (

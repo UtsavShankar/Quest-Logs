@@ -22,6 +22,7 @@ import { SettingsButton } from "./Buttons.jsx";
 import TabList from "./TabList.jsx"
 import QuestDetailsPanel from "./QuestDetailsPanel/QuestDetailsPanel.jsx";
 import { useTheme } from "../ThemeContext.js";
+import ThemeSync from "./ThemeSync.jsx";
 
 export default function TodoList({ user, settings, setSettings }) {
   const [todos, setTodos] = useState([]);
@@ -252,6 +253,7 @@ export default function TodoList({ user, settings, setSettings }) {
 
   return (
     <div>
+      <ThemeSync settings={settings}/>
       <div style={{ padding: '1rem', minHeight: '45rem', boxSizing: "border-box", display: "flex", flexDirection: "column" }}>
         <TopBar />
         <h1 style={{textAlign: 'center'}}>{theme.logTitle}</h1>

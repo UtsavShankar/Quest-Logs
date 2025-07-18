@@ -3,7 +3,6 @@ import { useTheme } from "../ThemeContext";
 
 export function FancyButton({ onClick, children }) {
     const { theme } = useTheme();
-    console.log(theme);
     const [hovered, setHovered] = useState(false);
     return (
         <div className="button-wrapper fancy">
