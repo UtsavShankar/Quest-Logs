@@ -21,7 +21,7 @@ import SettingsMenu from "./Settings.jsx";
 import { SettingsButton } from "./Buttons.jsx";
 import TabList from "./TabList.jsx"
 import QuestDetailsPanel from "./QuestDetailsPanel/QuestDetailsPanel.jsx";
-import { useTheme } from "../ThemeContext.js";
+import { useTheme } from "../hooks/ThemeContext.js";
 import ThemeSync from "./ThemeSync.jsx";
 
 export default function TodoList({ user, settings, setSettings }) {

@@ -1,8 +1,10 @@
 import { useState, useEffect } from "react";
 import themeData from "../data/themes.js";
+import { useTheme } from "../hooks/ThemeContext.js";
 
 export default function SettingsMenu({ closeMenu, settings, setSettings }) {
     const [currentSection, setCurrentSection] = useState("preferences");
+    const { theme } = useTheme();
 
     const themes = themeData.map(t => ({
         key: t.id,
@@ -23,6 +25,12 @@ export default function SettingsMenu({ closeMenu, settings, setSettings }) {
         }
     ]
 
+    const themeAudioOptions = theme.audio.map(a => ({
+        key: a.id,
+        label: a.label,
+        type: "switch"
+    }))
+
     const audioOptions = [
         {
             key: "ambienceVolume",
@@ -31,16 +39,7 @@ export default function SettingsMenu({ closeMenu, settings, setSettings }) {
             min: 0,
             max: 100
         },
-        {
-            key: "fireCrackling",
-            label: "Fire Crackling",
-            type: "switch"
-        },
-        {
-            key: "wind",
-            label: "Wind",
-            type: "switch"
-        }
+        ...themeAudioOptions
     ]
 
     const sections = [

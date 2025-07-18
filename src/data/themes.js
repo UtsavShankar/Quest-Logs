@@ -8,7 +8,21 @@ const themes = [
             backgroundVideo: `${process.env.PUBLIC_URL}/campfire_ambience.mp4`,
             fancyButton: `${process.env.PUBLIC_URL}/button-1.png`,
             fancyButtonBg: `${process.env.PUBLIC_URL}/button-1-bg.png`,
-        }
+        },
+        audio: [
+            {
+                id: "fireCrackling",
+                label: "Fire Crackling",
+                path: `${process.env.PUBLIC_URL}/fire_crackling.mp3`,
+                volumeMultiplier: 1,
+            },
+            {
+                id: "wind",
+                label: "Wind",
+                path: `${process.env.PUBLIC_URL}/wind.mp3`,
+                volumeMultiplier: 0.3,
+            }
+        ]
     },
     {
         id: "mission",
@@ -17,7 +31,8 @@ const themes = [
         taskName: "mission",
         assets: {
             backgroundVideo: null,
-        }
+        },
+        audio: [],
     },
     {
         id: "enchantment",
@@ -28,7 +43,8 @@ const themes = [
             backgroundVideo: `${process.env.PUBLIC_URL}/castle.mp4`,
             fancyButton: `${process.env.PUBLIC_URL}/button-2.png`,
             fancyButtonBg: `${process.env.PUBLIC_URL}/button-2-bg.png`,
-        }
+        },
+        audio: [],
     }
 ]
 

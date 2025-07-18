@@ -1,4 +1,4 @@
-import { useTheme } from "../ThemeContext.js";
+import { useTheme } from "../hooks/ThemeContext.js";
 
 export default function BackgroundVideo() {
     const { theme } = useTheme();

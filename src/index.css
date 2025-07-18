@@ -517,6 +517,7 @@ input.tag-search-input {
 
 .option-label {
   width: 150px;
+  text-transform: var(--label-text-transform);
 }
 
 .vertical-line {

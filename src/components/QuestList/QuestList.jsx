@@ -6,7 +6,7 @@ import TagPicker from "../Tags/Tags";
 import "../Buttons.css";
 import DatePicker from "../DatePicker";
 import { formatDate } from "../../utils/dateUtils";
-import { useTheme } from "../../ThemeContext";
+import { useTheme } from "../../hooks/ThemeContext";
 
 export default function QuestList({ todos, activeList, shownTodos, tagProps, toggleCompleted, openQuest, setOpenQuest, addTodoToDatabase }) {
     const { userTags, addTag, deleteTag, updateTag } = tagProps;
