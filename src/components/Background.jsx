@@ -1,7 +1,12 @@
+import { useTheme } from "../hooks/ThemeContext.js";
+
 export default function BackgroundVideo() {
+    const { theme } = useTheme();
+    const videoPath = theme.assets.backgroundVideo;
+
     return (
         <div>
-            <video className="background-video" src={`${process.env.PUBLIC_URL}/campfire_ambience.mp4`} autoPlay loop muted preload="auto"/>
+            {videoPath && <video className="background-video" src={videoPath} autoPlay loop muted preload="auto"/>}
         </div>
     )
 }

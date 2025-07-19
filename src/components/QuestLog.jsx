@@ -18,9 +18,11 @@ import { DndContext, PointerSensor, useSensor, useSensors} from "@dnd-kit/core";
 import { arrayMove } from "@dnd-kit/sortable";
 import QuestList from "./QuestList/QuestList.jsx";
 import SettingsMenu from "./Settings.jsx";
-import { SettingsButton, SimpleButton } from "./Buttons.jsx";
+import { SettingsButton } from "./Buttons.jsx";
 import TabList from "./TabList.jsx"
 import QuestDetailsPanel from "./QuestDetailsPanel/QuestDetailsPanel.jsx";
+import { useTheme } from "../hooks/ThemeContext.js";
+import ThemeSync from "./ThemeSync.jsx";
 
 export default function TodoList({ user, settings, setSettings }) {
   const [todos, setTodos] = useState([]);
@@ -37,6 +39,7 @@ export default function TodoList({ user, settings, setSettings }) {
   const [userLists, setUserLists] = useState([]);
   const [activeList, setActiveList] = useState("all");
   const [openQuest, setOpenQuest] = useState(null);
+  const { theme } = useTheme();
 
   const activateList = useCallback((listId) => {
     if (listId === "all") {
@@ -238,16 +241,22 @@ export default function TodoList({ user, settings, setSettings }) {
     return (
       <div style={{display: 'flex', justifyContent: 'space-between'}}>
         <SettingsButton onClick={() => setSettingsOpen(true)} />
-        <SimpleButton onClick={handleLogout}>Log out</SimpleButton>
+        <button className="simple-button" 
+          style={{ fontFamily: "var(--subheading-font)", fontSize: "15px" }}
+          onClick={handleLogout}
+        >
+          Log out
+        </button>
       </div>
     )
   }
 
   return (
     <div>
+      <ThemeSync settings={settings}/>
       <div style={{ padding: '1rem', minHeight: '45rem', boxSizing: "border-box", display: "flex", flexDirection: "column" }}>
         <TopBar />
-        <h1 style={{textAlign: 'center'}}>Quest Log</h1>
+        <h1 style={{textAlign: 'center'}}>{theme.logTitle}</h1>
         <br />
         <DndContext onDragEnd={handleDragEnd} sensors={sensors}>
           <div style={{ display: 'flex', justifyContent: 'center', gap: '1rem', flex: 1, margin: '2rem 2rem 2rem' }}>

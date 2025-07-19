@@ -6,6 +6,7 @@ import TagPicker from "../Tags/Tags";
 import "../Buttons.css";
 import DatePicker from "../DatePicker";
 import { formatDate } from "../../utils/dateUtils";
+import { useTheme } from "../../hooks/ThemeContext";
 
 export default function QuestList({ todos, activeList, shownTodos, tagProps, toggleCompleted, openQuest, setOpenQuest, addTodoToDatabase }) {
     const { userTags, addTag, deleteTag, updateTag } = tagProps;
@@ -15,6 +16,7 @@ export default function QuestList({ todos, activeList, shownTodos, tagProps, tog
     const [isAddingDate, setIsAddingDate] = useState(false);
     const [deadline, setDeadline] = useState(null);
     const [isNotifying, setIsNotifying] = useState(true);
+    const { theme } = useTheme();
     
     const addTodo = async () => {
         if (!newTask.trim()) return;
@@ -65,8 +67,8 @@ export default function QuestList({ todos, activeList, shownTodos, tagProps, tog
             }
         <br />
         <div style={{ position: 'relative', display: 'grid', gridTemplateColumns: "1fr auto", gap: '8px', alignItems: 'center', margin: "0 1em 0"}}>
-            <input className="text-input" value={newTask} placeholder="Enter new quest" onChange={(e) => setNewTask(e.target.value)} />
-            <button onClick={addTodo}>Add Quest</button>
+            <input className="text-input" value={newTask} placeholder={`Enter new ${theme.taskName}`} onChange={(e) => setNewTask(e.target.value)} />
+            <button onClick={addTodo}>{`Add ${theme.taskName.charAt(0).toUpperCase() + theme.taskName.slice(1)}`}</button>
         </div>
         <div style={{ display: "flex", gap: "1em", margin: "0.5em 1em 0.5em", position: "relative"}}>
             <span>

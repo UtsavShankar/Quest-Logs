@@ -61,7 +61,7 @@ export default function TodoItem({ todo, tagProps, onCompletedChange, onClick, i
         <div>
           <div style={{ display: 'grid', gridTemplateColumns: '1fr fit-content(5rem) auto', gap: '8px', alignItems: 'left'}}>
             <div style={{ display: 'contents', cursor: 'pointer' }} {...listeners}>
-            <span>{todo.title}</span>
+            <span className="todo-item-title">{todo.title}</span>
             <span style={{ background: `${tagColours.find(c => c.id === getTag()?.colour)?.background}`,
               justifySelf: "start", alignSelf: "center" }} className="tag">{getTag()?.name}</span>
             </div>

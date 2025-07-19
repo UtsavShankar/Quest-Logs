@@ -29,7 +29,7 @@ export default function AuthForm() {
   return (
     <div style={{ position: 'absolute', height: '100%', width: '100%', display:'flex', 
     flexDirection: 'column', alignItems: 'center', justifyContent: 'center', gap: '10px'}}>
-      <h2>Log in</h2>
+      <h2>Login</h2>
       <input className="text-input" style={{ width: "200px" }} placeholder="Email" value={email} onChange={(e) => setEmail(e.target.value)} />
       <input className="text-input" style={{ width: "200px" }} placeholder="Password" type="password" value={password} onChange={(e) => setPassword(e.target.value)} />
       {<span style={{ color: "red" }}>{error ? error : "\u00A0"}</span>}

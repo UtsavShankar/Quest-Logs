@@ -1,6 +1,6 @@
 import { useState, useRef, useEffect, useMemo } from "react";
-import { SimpleButton } from "./Buttons";
 import { useDroppable } from "@dnd-kit/core";
+import {ReactComponent as DeleteIcon} from '../assets/icon-delete.svg';
 
 export default function TabList({ userTabs, currentTab, setCurrentTab, addUserTab, deleteUserTab }) {
 
@@ -68,7 +68,13 @@ export default function TabList({ userTabs, currentTab, setCurrentTab, addUserTa
                     onClick={() => handleTabClick(tab.id)}>
                         {tab.name}
                 </button>
-                {tab.canEdit && <SimpleButton onClick={() => deleteTab(tab.id)}>Delete</SimpleButton>}
+                {tab.canEdit && 
+                <button
+                    style={{ all: "unset", display: "inline-flex", height: "auto", width: "auto", cursor: "pointer", alignSelf: "center" }}
+                    onClick={() => deleteTab(tab.id)}
+                >
+                    <DeleteIcon className="icon-button" />
+                </button>}
             </div>
         )
     }

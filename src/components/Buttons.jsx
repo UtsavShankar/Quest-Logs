@@ -1,11 +1,13 @@
 import { useState } from "react";
+import { useTheme } from "../hooks/ThemeContext";
 
 export function FancyButton({ onClick, children }) {
+    const { theme } = useTheme();
     const [hovered, setHovered] = useState(false);
     return (
         <div className="button-wrapper fancy">
-            <img src={`${process.env.PUBLIC_URL}/button-1-bg.png`} alt="" className={`fancy-button-bg ${hovered && "hover"}`} />
-            <img src={`${process.env.PUBLIC_URL}/button-1.png`} alt="" className="fancy-button-bg" />
+            <img src={theme.assets.fancyButtonBg} alt="" className={`fancy-button-bg ${hovered && "hover"}`} />
+            <img src={theme.assets.fancyButton} alt="" className="fancy-button-bg" />
             <button className="button-region fancy"
                 onClick={onClick} 
                 onMouseEnter={() => setHovered(true)}
