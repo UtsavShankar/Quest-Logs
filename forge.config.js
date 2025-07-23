@@ -1,9 +1,11 @@
 const { FusesPlugin } = require('@electron-forge/plugin-fuses');
 const { FuseV1Options, FuseVersion } = require('@electron/fuses');
+const path = require('path');
 
 module.exports = {
   packagerConfig: {
     executableName: "quest-logs",
+    icon: path.join(__dirname, "./src/assets/app-icon"),
     asar: true,
     "extraFiles": [
       "build"

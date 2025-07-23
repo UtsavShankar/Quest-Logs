@@ -19,11 +19,12 @@ export function FancyButton({ onClick, children }) {
 }
 
 export function SettingsButton({ onClick }) {
+    const { theme } = useTheme();
     const [hovered, setHovered] = useState(false);
     return (
         <div className="button-wrapper settings">
             <div className="settings-button-shadow"/>
-            <img src={hovered ? `${process.env.PUBLIC_URL}/settings-button-shiny.png` : `${process.env.PUBLIC_URL}/settings-button.png`} 
+            <img src={hovered ? theme.assets.settingsButtonHover : theme.assets.settingsButton} 
                 alt="Settings" 
                 className={"fancy-button-bg"}
             />

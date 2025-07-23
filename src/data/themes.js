@@ -8,6 +8,8 @@ const themes = [
             backgroundVideo: `${process.env.PUBLIC_URL}/campfire_ambience.mp4`,
             fancyButton: `${process.env.PUBLIC_URL}/button-1.png`,
             fancyButtonBg: `${process.env.PUBLIC_URL}/button-1-bg.png`,
+            settingsButton: `${process.env.PUBLIC_URL}/settings-button.png`,
+            settingsButtonHover: `${process.env.PUBLIC_URL}/settings-button-shiny.png`,
         },
         audio: [
             {
@@ -31,6 +33,8 @@ const themes = [
         taskName: "mission",
         assets: {
             backgroundVideo: null,
+            settingsButton: `${process.env.PUBLIC_URL}/settings-button-silver.png`,
+            settingsButtonHover: `${process.env.PUBLIC_URL}/settings-button-silver-shiny.png`,
         },
         audio: [],
     },
@@ -43,6 +47,8 @@ const themes = [
             backgroundVideo: `${process.env.PUBLIC_URL}/castle.mp4`,
             fancyButton: `${process.env.PUBLIC_URL}/button-2.png`,
             fancyButtonBg: `${process.env.PUBLIC_URL}/button-2-bg.png`,
+            settingsButton: `${process.env.PUBLIC_URL}/settings-button.png`,
+            settingsButtonHover: `${process.env.PUBLIC_URL}/settings-button-shiny.png`,
         },
         audio: [],
     }

@@ -9,7 +9,7 @@ let isQuitting = false;
 
 function createTray() {
   if (!tray){
-  const icon = nativeImage.createFromPath('' + path.join(__dirname, 'public/favicon.ico'));
+  const icon = nativeImage.createFromPath('' + path.join(__dirname, './src/assets/tray-icon-Template.png'));
   tray = new Tray(icon);
   const contextMenu = Menu.buildFromTemplate([
     {
@@ -28,7 +28,6 @@ function createTray() {
   ]);
   tray.setContextMenu(contextMenu);
   tray.setToolTip('This is my application')
-  tray.setTitle('This is my title') //only works on macOS
   }
 }
 
@@ -58,6 +57,9 @@ function createWindow() {
   );
 
   createTray();
+
+  const icon = nativeImage.createFromPath(path.join(__dirname, "./src/assets/app-icon.png"));
+  app.dock.setIcon(icon);
 
   app.on('before-quit', (event) => {
     isQuitting = true;
