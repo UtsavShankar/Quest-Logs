@@ -18,7 +18,7 @@ export default function AuthForm() {
       console.log("Reset email sent to", email);
     }
     catch (err) {
-      setError(err.message);
+      setError(formatMessage(err));
       console.log(err);
     }
   };
@@ -29,22 +29,36 @@ export default function AuthForm() {
         console.log("Trying to sign in with", email, password);
       await signInWithEmailAndPassword(auth, email, password);
     } catch (err) {
-      setError(err.message);
+      console.log(err);
+      setError(formatMessage(err));
     }
   };
 
- const handleRegister = async () => {
-  try {
+  const handleRegister = async () => {
+    try {
 
-    const userCredential = await createUserWithEmailAndPassword(auth, email, password);
-    await sendEmailVerification(userCredential.user).then(() => {
-      console.log("Verification email sent to", email);
-    })
-  } catch (err) {
-    setError(err.message);
-    console.log(err);
+      const userCredential = await createUserWithEmailAndPassword(auth, email, password);
+      await sendEmailVerification(userCredential.user).then(() => {
+        console.log("Verification email sent to", email);
+      })
+    } catch (err) {
+      setError(formatMessage(err));
+      console.log(err);
+    }
+  };
+
+  function formatMessage(err) {
+    switch (err.code) {
+      case "auth/invalid-email":
+        return "Invalid email.";
+      case "auth/missing-password":
+        return "Please enter your password."
+      case "auth/invalid-credential":
+        return "Incorrect email or password."
+      default:
+        return err.message;
+    }
   }
-};
 
   return (
     resetPass ? (
@@ -62,7 +76,7 @@ export default function AuthForm() {
       <h2>Login</h2>
       <input className="text-input" style={{ width: "200px" }} placeholder="Email" value={email} onChange={(e) => setEmail(e.target.value)} />
       <input className="text-input" style={{ width: "200px" }} placeholder="Password" type="password" value={password} onChange={(e) => setPassword(e.target.value)} />
-      <SimpleButton style={{fontSize:"15px"}} onClick={()=> setResetPass(true)}>Forgot password</SimpleButton>
+      <button className="forgot-password-button" onClick={()=> setResetPass(true)}>Forgot password</button>
       {<span style={{ color: "red" }}>{error ? error : "\u00A0"}</span>}
       <div style={{display: 'flex', gap: '10px'}}>
         <FancyButton onClick={handleLogin}>Login</FancyButton>

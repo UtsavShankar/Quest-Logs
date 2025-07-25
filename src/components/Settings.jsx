@@ -35,19 +35,20 @@ export default function SettingsMenu({ closeMenu, settings, setSettings }) {
 
     const audioOptions = [
         {
-            key: "ambienceVolume",
-            label: "Ambience Volume",
-            type: "slider",
-            min: 0,
-            max: 100
-        },
-        {
             key: "sfxVolume",
             label: "SFX Volume",
             type: "slider",
             min: 0,
             max: 100
         },
+        ...(themeAudioOptions.length > 0 ?
+        [{
+            key: "ambienceVolume",
+            label: "Ambience Volume",
+            type: "slider",
+            min: 0,
+            max: 100
+        }] : []),
         ...themeAudioOptions
     ]
 
@@ -72,11 +73,13 @@ export default function SettingsMenu({ closeMenu, settings, setSettings }) {
     }
 
     function Slider({ label, min, max, value, onChange }) {
+        const [locaVal, setLocalVal] = useState(value);
         return <label style={{display: "flex", alignItems: "center"}}>
             <span className="option-label"> {label} </span>
-            <input style={{width: "130px"}} type="range" value={value} min={min} max={max} 
-                onChange={(e) => onChange(Number(e.target.value))}/>
-            <span style={{marginLeft: "10px"}}>{value}</span>
+            <input style={{width: "130px"}} type="range" value={locaVal} min={min} max={max} 
+                onChange={(e) => setLocalVal(Number(e.target.value))}
+                onMouseUp={(e) => onChange(Number(e.target.value))}/>
+            <span style={{marginLeft: "10px"}}>{locaVal}</span>
         </label>
     }
 
@@ -106,6 +109,10 @@ export default function SettingsMenu({ closeMenu, settings, setSettings }) {
     }
 
     useEffect(() => {
+        updateSliderFill();
+    }, [settings, currentSection]);
+
+    function updateSliderFill() {
         const sliders = document.querySelectorAll('.settings input[type="range"]');
 
         sliders.forEach(slider => {
@@ -122,7 +129,7 @@ export default function SettingsMenu({ closeMenu, settings, setSettings }) {
             slider.removeEventListener("input", updateSliderFill);
             };
         });
-    }, [settings]);
+    }
 
     return (
         <div className="settings-wrapper">
@@ -132,7 +139,7 @@ export default function SettingsMenu({ closeMenu, settings, setSettings }) {
                 <div className="settings">
                     <div className="settings-close-button">
                         <button className="circle" onClick={() => {
-                            playSfx("click");
+                            playSfx("swipe");
                             closeMenu();
                         }}/>
                         <img style={{height: "40px"}} src={`${process.env.PUBLIC_URL}/close-button-1.png`} alt="close button"/>

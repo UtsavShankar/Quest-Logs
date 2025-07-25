@@ -89,6 +89,9 @@
   --checkbox-outer-box-shadow: rgba(78, 208, 255, 0.5); */
 
   --hover-color: rgb(176, 217, 255);
+
+  --forgot-password-size: 0.8rem;
+  --forgot-password-color: gray;
 }
 
 .theme-enchantment {
@@ -105,7 +108,7 @@
   --heading-letter-spacing: 0;
   --heading-color: #ffffff;
   --heading-text-shadow:
-    0.1rem 0.1rem 0 #3f7958,
+    0.1rem 0.1rem 0 #1c2921,
     0 0 0.3rem #00540d,
     0 0 1rem #003a03;
     /* 0 0 0.3rem rgb(255, 0, 166),
@@ -672,6 +675,20 @@ input.tag-search-input {
 
 .icon-button:hover {
   fill: var(--highlight-color);
+}
+
+.forgot-password-button {
+  font-size: var(--forgot-password-size);
+  color: var(--forgot-password-color);
+  background: none;
+  border: none;
+  text-shadow: 0 0 4px black;
+  padding: 0;
+  text-transform: none; 
+}
+
+.forgot-password-button:hover {
+    color: var(--highlight-color);
 }
 
 code {

@@ -35,6 +35,10 @@
     text-transform: var(--label-text-transform); 
 }
 
+.button-region.fancy.default:hover {
+    color: var(--highlight-color);
+}
+
 .button-region.settings {
     border-radius: 50%;
     height: 25px;

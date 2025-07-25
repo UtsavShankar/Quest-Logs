@@ -56,7 +56,7 @@ export default function TabList({ userTabs, currentTab, setCurrentTab, addUserTa
             justifyContent: "space-between",
             padding: "0.25em 0.5em 0.25em",
             borderRadius: "0.3em",
-            backgroundColor: isOver ? 'rgba(184, 124, 19, 0.5)' : undefined,
+            backgroundColor: isOver ? 'var(--dark-highlight-color)' : undefined,
         };
 
         return (

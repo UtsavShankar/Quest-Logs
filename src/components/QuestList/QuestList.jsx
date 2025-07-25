@@ -28,7 +28,7 @@ export default function QuestList({ todos, activeList, shownTodos, tagProps, tog
             sortOrder: todos.length,
             deadline: deadline,
             isNotifying: isNotifying,
-            tags: [tag.id],
+            tags: [tag ? tag.id : null],
             description: "",
         };
         if (activeList !== "all" && activeList !== "timeline" && activeList !== "completed") {
