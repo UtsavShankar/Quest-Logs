@@ -1,11 +1,13 @@
 import { useEffect, useRef, useState } from "react";
 import { useTheme } from "./ThemeContext.js";
+import sfx from "../data/sfxData.js";
 
 export default function useAudio(settings) {
     const { theme } = useTheme();
 
     const audioRefs = useRef(new Map());
     const [hasInteracted, setHasInteracted] = useState(false);
+    const sfxRefs = useRef(new Map());
 
     // Initialise audio
     useEffect(() => {
@@ -83,4 +85,27 @@ export default function useAudio(settings) {
             })
         })
     }, [settings, theme.audio]);
+
+    // Initialise SFX refs
+    useEffect(() => {
+        sfx.forEach((value, key, map) => {
+            const audio = new Audio(value);
+            sfxRefs.current.set(key, audio);
+        })
+    }, [])
+
+    // Set SFX volume
+    useEffect(() => {
+        if (!sfxRefs.current) return;
+        sfxRefs.current.forEach((audio, key, map) => {
+            audio.volume = settings.sfxVolume / 100;
+        })
+    }, [settings.sfxVolume]);
+
+    function playSfx(key) {
+        if (!sfxRefs.current) return;
+        sfxRefs.current.get(key)?.play();
+    }
+
+    return { playSfx };
 }

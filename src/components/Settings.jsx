@@ -1,10 +1,12 @@
 import { useState, useEffect } from "react";
 import themeData from "../data/themes.js";
 import { useTheme } from "../hooks/ThemeContext.js";
+import { useAudioContext } from "../AudioContext.js";
 
 export default function SettingsMenu({ closeMenu, settings, setSettings }) {
     const [currentSection, setCurrentSection] = useState("preferences");
     const { theme } = useTheme();
+    const { playSfx } = useAudioContext();
 
     const themes = themeData.map(t => ({
         key: t.id,
@@ -39,6 +41,13 @@ export default function SettingsMenu({ closeMenu, settings, setSettings }) {
             min: 0,
             max: 100
         },
+        {
+            key: "sfxVolume",
+            label: "SFX Volume",
+            type: "slider",
+            min: 0,
+            max: 100
+        },
         ...themeAudioOptions
     ]
 
@@ -67,7 +76,7 @@ export default function SettingsMenu({ closeMenu, settings, setSettings }) {
             <span className="option-label"> {label} </span>
             <input style={{width: "130px"}} type="range" value={value} min={min} max={max} 
                 onChange={(e) => onChange(Number(e.target.value))}/>
-            <span style={{marginLeft: "10px"}}>{settings.ambienceVolume}</span>
+            <span style={{marginLeft: "10px"}}>{value}</span>
         </label>
     }
 
@@ -75,7 +84,11 @@ export default function SettingsMenu({ closeMenu, settings, setSettings }) {
         return <label style={{display: "flex", alignItems: "center"}}>
             <span className="option-label">{label}</span>
             <input type="checkbox" checked={value} 
-                onChange={(e) => onChange(e.target.checked)}/>
+                onChange={(e) => {
+                    const checked = e.target.checked;
+                    checked ? playSfx("ding swipe 2") : playSfx("swipe");
+                    onChange(e.target.checked);
+                }}/>
         </label>
     }
 
@@ -99,7 +112,7 @@ export default function SettingsMenu({ closeMenu, settings, setSettings }) {
             const updateSliderFill = () => {
                 const value = slider.value;
                 const percent = (value - slider.min) / (slider.max - slider.min) * 100;
-                slider.style.background = `linear-gradient(to right, #7C643C ${percent}%, #333 ${percent}%)`;
+                slider.style.background = `linear-gradient(to right, var(--medium-highlight-color) ${percent}%, #333 ${percent}%)`;
             };
 
             slider.addEventListener("input", updateSliderFill);
@@ -118,7 +131,10 @@ export default function SettingsMenu({ closeMenu, settings, setSettings }) {
                 <img className="settings-frame" src={`${process.env.PUBLIC_URL}/frame1.png`} alt=""></img>
                 <div className="settings">
                     <div className="settings-close-button">
-                        <button className="circle" onClick={closeMenu}/>
+                        <button className="circle" onClick={() => {
+                            playSfx("click");
+                            closeMenu();
+                        }}/>
                         <img style={{height: "40px"}} src={`${process.env.PUBLIC_URL}/close-button-1.png`} alt="close button"/>
                     </div>
                     <div style={{position: "absolute", top: "8%", right: "75%"}}>

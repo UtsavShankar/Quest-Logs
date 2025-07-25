@@ -62,7 +62,7 @@ export default function AuthForm() {
       <h2>Login</h2>
       <input className="text-input" style={{ width: "200px" }} placeholder="Email" value={email} onChange={(e) => setEmail(e.target.value)} />
       <input className="text-input" style={{ width: "200px" }} placeholder="Password" type="password" value={password} onChange={(e) => setPassword(e.target.value)} />
-      <SimpleButton style={{fontSize:"15px"}} onClick={()=> setResetPass(true)}>Did you forget your password?</SimpleButton>
+      <SimpleButton style={{fontSize:"15px"}} onClick={()=> setResetPass(true)}>Forgot password</SimpleButton>
       {<span style={{ color: "red" }}>{error ? error : "\u00A0"}</span>}
       <div style={{display: 'flex', gap: '10px'}}>
         <FancyButton onClick={handleLogin}>Login</FancyButton>

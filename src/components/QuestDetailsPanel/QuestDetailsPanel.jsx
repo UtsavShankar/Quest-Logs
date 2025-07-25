@@ -145,18 +145,36 @@ export default function QuestDetailsPanel({ quest, onUpdate, onDelete, tagProps 
     const titleRef = useRef(null);
 
     const handleTitleKeyDown = (event) => {
-        if (event.key === 'Enter' && event.target.value) {
+        if (event.key === 'Enter') {
             titleRef.current.blur();
             endEditTitle();
         }
     }
 
     const endEditTitle = () => {
+        setTitle(titleRef.current.innerText.trim());
+        const title = titleRef.current.innerText.trim();
         title !== ""
         ? updateTitle(title)
         : setTitle(quest.title);
         setIsEditingTitle(false);
     }
+
+    useEffect(() => {
+        if (!isEditingTitle && titleRef.current) {
+            titleRef.current.innerText = title;
+        }
+    }, [isEditingTitle, title]);
+
+    useEffect(() => {
+        if (titleRef.current) {
+            if (isEditingTitle) {
+                titleRef.current.style.textTransform = "none";
+            } else {
+                titleRef.current.style.textTransform = "";
+        }
+    }
+    }, [isEditingTitle]);
 
     const [dropdownIsShowing, setDropdownIsShowing] = useState(false);
 
@@ -171,14 +189,14 @@ export default function QuestDetailsPanel({ quest, onUpdate, onDelete, tagProps 
                         onClick={() => onDelete(quest.id)}>Delete</button>
                 }
             </div>
-            <input ref={titleRef}
-                className="h2-input" 
-                value={title}
-                style={{color: `${isEditingTitle ? "var(--highlight-color" : "white"}`}}
-                onChange={(e) => setTitle(e.target.value)}
+            <span
+                ref={titleRef}
+                className="h2-input"
+                style={{ color: isEditingTitle ? "var(--highlight-color)" : "white" }}
                 onFocus={() => setIsEditingTitle(true)}
                 onBlur={endEditTitle}
                 onKeyDown={handleTitleKeyDown}
+                contentEditable
             />
             <MetaRow/>
             <div style={{ margin: "1em 0.3em 0.3em", flex: 1 }}>

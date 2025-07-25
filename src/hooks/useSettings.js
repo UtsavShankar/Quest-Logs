@@ -1,11 +1,12 @@
 import { useEffect, useState } from "react";
 import { onAuthStateChanged } from 'firebase/auth';
-import { doc, getDoc, updateDoc } from "firebase/firestore";
+import { doc, getDoc, setDoc } from "firebase/firestore";
 import { db, auth } from "../firebase";
 
 const defaultSettings = {
   dynamicBG: true,
   ambienceVolume: 50,
+  sfxVolume: 50,
   fireCrackling: true,
   wind: true,
   theme: "quest"
@@ -45,7 +46,7 @@ export function useSettings(user, setUser) {
             const updateSettings = async () => {
                 const userRef = doc(db, "users", user.uid);
                 try {
-                    await updateDoc(userRef, { setting: settings });
+                    await setDoc(userRef, { setting: settings }, { merge: true });
                     console.log("Settings updated successfully", settings);
                 } catch (e) {
                     // Optionally handle errors (e.g., permissions)

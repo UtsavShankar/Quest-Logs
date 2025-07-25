@@ -5,19 +5,20 @@ import BackgroundVideo from './components/Background';
 import { ThemeProvider } from './hooks/ThemeContext.js';
 import useAudio from './hooks/useAudio.js';
 import { useSettings } from './hooks/useSettings.js';
+import { AudioContext } from './AudioContext.js';
 
 function AppContent({ user, settings, setSettings, loginFormSettings }) {
-  useAudio(user ? settings : loginFormSettings);
+  const audio = useAudio(user ? settings : loginFormSettings);
 
   return (
-    <div>
+    <AudioContext.Provider value={audio}>
       {settings.dynamicBG && <BackgroundVideo />}
       {!user ? (
         <AuthForm />
       ) : (
         <QuestLog user={user} settings={settings} setSettings={setSettings} />
       )}
-    </div>
+    </AudioContext.Provider>
   )
 }
 

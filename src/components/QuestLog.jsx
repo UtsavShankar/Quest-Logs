@@ -254,12 +254,12 @@ export default function TodoList({ user, settings, setSettings }) {
   return (
     <div>
       <ThemeSync settings={settings}/>
-      <div style={{ padding: '1rem', minHeight: '45rem', boxSizing: "border-box", display: "flex", flexDirection: "column" }}>
+      <div style={{ padding: '1rem', minHeight: '45rem', boxSizing: "border-box", display: "flex", flexDirection: "column", height: "100vh"  }}>
         <TopBar />
         <h1 style={{textAlign: 'center'}}>{theme.logTitle}</h1>
         <br />
         <DndContext onDragEnd={handleDragEnd} sensors={sensors}>
-          <div style={{ display: 'flex', justifyContent: 'center', gap: '1rem', flex: 1, margin: '2rem 2rem 2rem' }}>
+          <div style={{ display: 'flex', justifyContent: 'center', gap: '1rem', flex: 1, margin: '2rem 2rem 2rem', minHeight: 0 }}>
             <TabList userTabs={userLists} currentTab={activeList} setCurrentTab={activateList} addUserTab={addList} deleteUserTab={deleteList}/>
             <QuestList 
               todos={todos}

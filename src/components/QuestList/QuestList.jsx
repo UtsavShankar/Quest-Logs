@@ -7,6 +7,7 @@ import "../Buttons.css";
 import DatePicker from "../DatePicker";
 import { formatDate } from "../../utils/dateUtils";
 import { useTheme } from "../../hooks/ThemeContext";
+import tagColours from "../../data/tagData.js";
 
 export default function QuestList({ todos, activeList, shownTodos, tagProps, toggleCompleted, openQuest, setOpenQuest, addTodoToDatabase }) {
     const { userTags, addTag, deleteTag, updateTag } = tagProps;
@@ -27,14 +28,14 @@ export default function QuestList({ todos, activeList, shownTodos, tagProps, tog
             sortOrder: todos.length,
             deadline: deadline,
             isNotifying: isNotifying,
-            tags: [tag],
+            tags: [tag.id],
             description: "",
         };
-        if (activeList !== "all" && activeList !== "completed") {
+        if (activeList !== "all" && activeList !== "timeline" && activeList !== "completed") {
             item.list = activeList;
         }
         setNewTask("");
-        setTag("");
+        setTag(null);
         setDeadline(null);
         setIsAddingTag(false);
         setIsAddingDate(false);
@@ -42,11 +43,16 @@ export default function QuestList({ todos, activeList, shownTodos, tagProps, tog
         addTodoToDatabase(item);
     };
 
+    const getTagColour = () => {
+        return tagColours.find(c => c.id === tag?.colour)?.background;
+    }
+
     return (
         <div className="quest-list">
+            <div className="quests">
             {activeList !== "timeline"
             ? <SortableContext items={todos}>
-            <ul style={{listStyleType: "none", margin: 0, padding: 0}}>
+            <ul style={{listStyleType: "none", margin: 0, padding: 0, flex: 1, minHeight: 0 }}>
                 {shownTodos.map((todo) => (
                     <TodoItem
                         key={todo.id} 
@@ -65,37 +71,38 @@ export default function QuestList({ todos, activeList, shownTodos, tagProps, tog
                 todoActions={{ toggleCompleted, openQuest, setOpenQuest }}
             />
             }
-        <br />
-        <div style={{ position: 'relative', display: 'grid', gridTemplateColumns: "1fr auto", gap: '8px', alignItems: 'center', margin: "0 1em 0"}}>
-            <input className="text-input" value={newTask} placeholder={`Enter new ${theme.taskName}`} onChange={(e) => setNewTask(e.target.value)} />
-            <button onClick={addTodo}>{`Add ${theme.taskName.charAt(0).toUpperCase() + theme.taskName.slice(1)}`}</button>
-        </div>
-        <div style={{ display: "flex", gap: "1em", margin: "0.5em 1em 0.5em", position: "relative"}}>
-            <span>
-            {
-                !isAddingTag
-                ? tag
-                ? <span className="tag" onClick={() => setIsAddingTag(true)}>{tag.name}</span>
-                : <button className="simple-button" onClick={() => setIsAddingTag(true)}>Add Tag</button>
-                : <TagPicker editTag={tag} tagProps={{ userTags, addTag, deleteTag, updateTag }} onUpdate={newTag => setTag(newTag)} endEdit={() => setIsAddingTag(false)}/>
-            }
-            </span>
-            <span>
-            {
-              !isAddingDate
-              ? <button className="simple-button" onClick={() => setIsAddingDate(true)}>{deadline ? formatDate(deadline) : "Add Date"}</button>
-              : <DatePicker value={deadline || ""} 
-                  onChange={date => setDeadline(date)}
-                  onBlur={() => setIsAddingDate(false)}
-                  remindChecked={isNotifying}
-                  onRemindChange={e => {
-                    const notifying = e.target.checked;
-                    setIsNotifying(notifying)
-                  }}
-                />
-            }
-            </span>
-        </div>
+            </div>
+            <br />
+            <div style={{ position: 'relative', display: 'grid', gridTemplateColumns: "1fr auto", gap: '8px', alignItems: 'center', margin: "0 1em 0"}}>
+                <input className="text-input" value={newTask} placeholder={`Enter new ${theme.taskName}`} onChange={(e) => setNewTask(e.target.value)} />
+                <button onClick={addTodo}>{`Add ${theme.taskName.charAt(0).toUpperCase() + theme.taskName.slice(1)}`}</button>
+            </div>
+            <div style={{ display: "flex", gap: "1em", margin: "0.5em 1em 0.5em", position: "relative"}}>
+                <span>
+                {
+                    !isAddingTag
+                    ? tag
+                    ? <span className="tag" style={{ background: getTagColour() }} onClick={() => setIsAddingTag(true)}>{tag.name}</span>
+                    : <button className="simple-button" onClick={() => setIsAddingTag(true)}>Add Tag</button>
+                    : <TagPicker editTag={tag} tagProps={{ userTags, addTag, deleteTag, updateTag }} onUpdate={newTag => setTag(newTag)} endEdit={() => setIsAddingTag(false)}/>
+                }
+                </span>
+                <span>
+                {
+                    !isAddingDate
+                    ? <button className="simple-button" onClick={() => setIsAddingDate(true)}>{deadline ? formatDate(deadline) : "Add Date"}</button>
+                    : <DatePicker value={deadline || ""} 
+                        onChange={date => setDeadline(date)}
+                        onBlur={() => setIsAddingDate(false)}
+                        remindChecked={isNotifying}
+                        onRemindChange={e => {
+                            const notifying = e.target.checked;
+                            setIsNotifying(notifying)
+                        }}
+                    />
+                }
+                </span>
+            </div>
         </div>
     )
 }
