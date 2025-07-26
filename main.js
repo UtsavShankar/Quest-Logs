@@ -40,6 +40,7 @@ function activateApp() {
 }
 
 function createWindow() {
+  app.setAppUserModelId("quest-logs");
    win = new BrowserWindow({
     width: 1200,
     height: 800,

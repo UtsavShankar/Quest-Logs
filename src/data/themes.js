@@ -50,7 +50,14 @@ const themes = [
             settingsButton: `${process.env.PUBLIC_URL}/settings-button.png`,
             settingsButtonHover: `${process.env.PUBLIC_URL}/settings-button-shiny.png`,
         },
-        audio: [],
+        audio: [
+            {
+                id: "birdsong",
+                label: "Birdsong",
+                path: `${process.env.PUBLIC_URL}/birdsong-5-min.mp3`,
+                volumeMultiplier: 1,
+            },
+        ],
     }
 ]
 

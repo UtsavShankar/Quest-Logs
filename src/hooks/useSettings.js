@@ -9,6 +9,7 @@ const defaultSettings = {
   sfxVolume: 50,
   fireCrackling: true,
   wind: true,
+  birdsong: true,
   theme: "quest"
 }
 const loginFormSettings = JSON.parse(localStorage.getItem("settings")) || defaultSettings;
