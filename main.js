@@ -36,6 +36,7 @@ function activateApp() {
     createWindow();
   }else{
     win.show();
+    win.focus();
   }
 }
 
@@ -59,8 +60,10 @@ function createWindow() {
 
   createTray();
 
-  const icon = nativeImage.createFromPath(path.join(__dirname, "./src/assets/app-icon.png"));
+ const icon = nativeImage.createFromPath(path.join(__dirname, "./src/assets/app-icon.png"));
+if (process.platform === 'darwin') {
   app.dock.setIcon(icon);
+}
 
   app.on('before-quit', (event) => {
     isQuitting = true;
