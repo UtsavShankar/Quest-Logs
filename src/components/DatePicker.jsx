@@ -8,7 +8,9 @@ export default function DatePicker({ value, onChange, onBlur, showRemind = true,
             onChange(null);
             return;
         }
-        const yyyyMmDd = date.toISOString().split("T")[0];
+        console.log("Chose date", date);
+        const yyyyMmDd = date.toLocaleDateString('en-CA');
+        console.log("yyyyMmDd is", yyyyMmDd);
         onChange(yyyyMmDd);
     };
 

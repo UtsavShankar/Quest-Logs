@@ -92,7 +92,10 @@ export default function QuestList({ todos, activeList, shownTodos, tagProps, tog
                     !isAddingDate
                     ? <button className="simple-button" onClick={() => setIsAddingDate(true)}>{deadline ? formatDate(deadline) : "Add Date"}</button>
                     : <DatePicker value={deadline || ""} 
-                        onChange={date => setDeadline(date)}
+                        onChange={date => {
+                            setIsAddingDate(false);
+                            setDeadline(date);
+                        }}
                         onBlur={() => setIsAddingDate(false)}
                         remindChecked={isNotifying}
                         onRemindChange={e => {

@@ -24,7 +24,7 @@ export default function TagItem({ tag, colours, onClick, onUpdate, onDelete, men
                 }}
             >
                 <span style={{ backgroundColor: colour.background }} className="tag-colour-swatch"/>
-                <span style={{ width: "5rem" }}>{colour.label}</span>
+                <span style={{ width: "5rem", flex: 1 }}>{colour.label}</span>
                 <span style={{ margin: "0 0.5rem 0", visibility: active ? "visible" : "hidden" }}>✓</span>
             </button>
         )
