@@ -19,7 +19,7 @@ import { arrayMove } from "@dnd-kit/sortable";
 import QuestList from "./QuestList/QuestList.jsx";
 import SettingsMenu from "./Settings.jsx";
 import { SettingsButton } from "./Buttons.jsx";
-import TabList from "./TabList.jsx"
+import TabList from "./SideMenu/TabList.jsx"
 import QuestDetailsPanel from "./QuestDetailsPanel/QuestDetailsPanel.jsx";
 import { useTheme } from "../hooks/ThemeContext.js";
 import ThemeSync from "./ThemeSync.jsx";
@@ -230,6 +230,14 @@ export default function TodoList({ user, settings, setSettings }) {
     loadQuestLists();
   }
 
+  const updateList = async (listId, newName) => {
+    const docRef = doc(db, "users", user.uid, "lists", listId);
+    await updateDoc(docRef, {
+      name: newName
+    });
+    loadQuestLists();
+  }
+
   const moveTodoToList = async (todoId, listId) => {
     await updateDoc(doc(db, "users", user.uid, "todos", todoId), {
       list: listId
@@ -260,7 +268,7 @@ export default function TodoList({ user, settings, setSettings }) {
         <br />
         <DndContext onDragEnd={handleDragEnd} sensors={sensors}>
           <div style={{ display: 'flex', justifyContent: 'center', gap: '1rem', flex: 1, margin: '2rem 2rem 2rem', minHeight: 0 }}>
-            <TabList userTabs={userLists} currentTab={activeList} setCurrentTab={activateList} addUserTab={addList} deleteUserTab={deleteList}/>
+            <TabList userTabs={userLists} currentTab={activeList} setCurrentTab={activateList} addUserTab={addList} deleteUserTab={deleteList} updateTab={updateList}/>
             <QuestList 
               todos={todos}
               activeList={activeList}
