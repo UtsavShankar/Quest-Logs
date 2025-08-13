@@ -80,6 +80,8 @@ export default function TodoList({ user, settings, setSettings }) {
 
   //if todos is changed, send the todos to ipc renderer
   useEffect(() => {
+    if (!window?.electronAPI) return;
+
     if (todos.length > 0 && window?.electronAPI.sendTodosToMain) {
       window.electronAPI.sendTodosToMain(todos);
     }

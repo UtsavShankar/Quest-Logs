@@ -65,7 +65,7 @@ export default function useAudio(settings) {
     }, [settings.ambienceVolume, settings.dynamicBG, theme.audio])
 
     useEffect(() => {
-        if (!audioRefs.current) return;
+        if (!audioRefs.current || !window.electronAPI ) return;
 
         window.electronAPI.onWindowHidden(() => {
             console.log("window hidden");
