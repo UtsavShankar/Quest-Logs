@@ -9,7 +9,7 @@ import { formatDate } from "../../utils/dateUtils";
 import { useTheme } from "../../hooks/ThemeContext";
 import tagColours from "../../data/tagData.js";
 
-export default function QuestList({ todos, activeList, shownTodos, tagProps, toggleCompleted, openQuest, setOpenQuest, addTodoToDatabase }) {
+export default function QuestList({ ref, todos, activeList, shownTodos, tagProps, toggleCompleted, openQuest, setOpenQuest, addTodoToDatabase }) {
     const { userTags, addTag, deleteTag, updateTag } = tagProps;
     const [newTask, setNewTask] = useState("");
     const [isAddingTag, setIsAddingTag] = useState(false);
@@ -48,7 +48,7 @@ export default function QuestList({ todos, activeList, shownTodos, tagProps, tog
     }
 
     return (
-        <div className="quest-list">
+        <div className="quest-list" ref={ref}>
             <div className="quests">
             {activeList !== "timeline"
             ? <SortableContext items={todos}>

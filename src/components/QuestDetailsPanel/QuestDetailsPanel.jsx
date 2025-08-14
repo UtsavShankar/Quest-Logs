@@ -7,7 +7,7 @@ import { formatDate } from "../../utils/dateUtils.js";
 import DatePicker from "../DatePicker.jsx";
 import "../Buttons.css";
 
-export default function QuestDetailsPanel({ quest, onUpdate, onDelete, tagProps }) {
+export default function QuestDetailsPanel({ ref, quest, onUpdate, onDelete, tagProps }) {
     const { userTags } = tagProps;
 
     const [title, setTitle] = useState(quest.title);
@@ -92,7 +92,7 @@ export default function QuestDetailsPanel({ quest, onUpdate, onDelete, tagProps 
                             ? <span style={{ background: `${tagColours.find(c => c.id === tag?.colour)?.background}`, 
                                 justifySelf: "start", cursor: "pointer" }} 
                                 className="tag" onClick={() => setIsEditingTag(true)}>{tag.name}</span>
-                            : <SimpleButton style={{color: "gray"}} onClick={() => setIsEditingTag(true)}>Add Tag</SimpleButton>
+                            : <button className="simple-button" style={{color: "gray"}} onClick={() => setIsEditingTag(true)}>Add Tag</button>
                     }
 
                     {
@@ -179,7 +179,7 @@ export default function QuestDetailsPanel({ quest, onUpdate, onDelete, tagProps 
     const [dropdownIsShowing, setDropdownIsShowing] = useState(false);
 
     return(
-        <div className="quest-details-panel">
+        <div ref={ref} className="quest-details-panel">
             <div className="simple-button" onClick={() => setDropdownIsShowing(!dropdownIsShowing)} 
                 style={{ marginLeft: "auto", position: "relative", cursor:"pointer" }}>
                 ...

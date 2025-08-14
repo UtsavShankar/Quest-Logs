@@ -1,4 +1,4 @@
-import { useEffect, useState, useCallback } from "react";
+import { useEffect, useState, useCallback, useRef } from "react";
 import { db, auth } from "../firebase.js";
 import { signOut } from "firebase/auth";
 import {
@@ -40,6 +40,9 @@ export default function TodoList({ user, settings, setSettings }) {
   const [activeList, setActiveList] = useState("all");
   const [openQuest, setOpenQuest] = useState(null);
   const { theme } = useTheme();
+  const tabListRef = useRef();
+  const questListRef = useRef();
+  const detailsPanelRef = useRef();
 
   const activateList = useCallback((listId) => {
     if (listId === "all") {
@@ -122,6 +125,27 @@ export default function TodoList({ user, settings, setSettings }) {
   useEffect(() => {
       loadQuestLists();
   }, [loadQuestLists]);
+
+  // Close the details panel when click outside
+  useEffect(() => {
+    const handler = (event) => {
+      if (!openQuest) return;
+      if (!tabListRef.current || !questListRef.current || !detailsPanelRef.current) return;
+      const clickedInSidePanel = tabListRef.current.contains(event.target);
+      const clickedInQuestList = questListRef.current.contains(event.target);
+      const clickedInDetailsPanel = detailsPanelRef.current.contains(event.target);
+
+      if (!clickedInSidePanel && !clickedInQuestList && !clickedInDetailsPanel) {
+        setOpenQuest(null);
+      }
+    };
+
+    document.addEventListener("mousedown", handler);
+
+    return () => {
+        document.removeEventListener("mousedown", handler);
+    }
+  }, [openQuest]);
 
   const updateTodo = async (id, newTitle, newTagId, newDeadline, newScheduledDate, newDescription, isNotifying) => {
      await updateDoc(doc(db, "users", user.uid, "todos", id), { 
@@ -270,8 +294,17 @@ export default function TodoList({ user, settings, setSettings }) {
         <br />
         <DndContext onDragEnd={handleDragEnd} sensors={sensors}>
           <div style={{ display: 'flex', justifyContent: 'center', gap: '1rem', flex: 1, margin: '2rem 2rem 2rem', minHeight: 0 }}>
-            <TabList userTabs={userLists} currentTab={activeList} setCurrentTab={activateList} addUserTab={addList} deleteUserTab={deleteList} updateTab={updateList}/>
+            <TabList 
+              ref={tabListRef} 
+              userTabs={userLists} 
+              currentTab={activeList} 
+              setCurrentTab={activateList} 
+              addUserTab={addList} 
+              deleteUserTab={deleteList} 
+              updateTab={updateList}
+            />
             <QuestList 
+              ref={questListRef}
               todos={todos}
               activeList={activeList}
               shownTodos={shownTodos}
@@ -283,6 +316,7 @@ export default function TodoList({ user, settings, setSettings }) {
             />
             {
               openQuest && <QuestDetailsPanel 
+                ref={detailsPanelRef}
                 quest={openQuest} 
                 tagProps={{ userTags, addTag, deleteTag, updateTag }}
                 onUpdate={updateTodo} 

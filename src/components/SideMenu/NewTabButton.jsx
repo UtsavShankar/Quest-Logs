@@ -28,10 +28,6 @@ export default function NewTabButton({ addTab, isAddingTab, setIsAddingTab }) {
         }
     }
 
-    useEffect(() => {
-        console.log("new button");
-    }, [])
-
     return (
         isAddingTab
         ? <input ref={addTabRef} autoFocus="autofocus" onKeyDown={handleKeyDown} placeholder="New List"/>

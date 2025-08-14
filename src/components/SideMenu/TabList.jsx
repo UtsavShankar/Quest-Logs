@@ -2,7 +2,7 @@ import { useState, useEffect, useMemo } from "react";
 import Tab from "./Tab";
 import NewTabButton from "./NewTabButton";
 
-export default function TabList({ userTabs, currentTab, setCurrentTab, addUserTab, deleteUserTab, updateTab }) {
+export default function TabList({ ref, userTabs, currentTab, setCurrentTab, addUserTab, deleteUserTab, updateTab }) {
     const defaultTabs = useMemo(() => [
         {
             id: "all",
@@ -45,7 +45,7 @@ export default function TabList({ userTabs, currentTab, setCurrentTab, addUserTa
     }
 
     return (
-        <div className="tab-list">
+        <div ref={ref} className="tab-list">
             {tabs.map((tab) => <Tab key={tab.id} {...{ tab, currentTab, deleteTab, updateTab, handleTabClick }}/>)}
             <NewTabButton {...{ setIsAddingTab, addTab, isAddingTab }} />
         </div>
