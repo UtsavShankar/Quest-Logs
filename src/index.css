@@ -586,18 +586,25 @@ input.tag-search-input {
 
 .quest-details-panel {
   background: rgba(0, 0, 0, 0.75);
-  padding: 0.5rem 1rem 1rem;
+  padding: 1rem 1rem 1rem;
   border: solid var(--border-color) 1px;
   width: 20rem;
   display: flex;
   flex-direction: column;
 }
 
-.delete-button {
+.quest-options-menu {
   position: absolute;
   top: 100%;
   right: 0;
+  background-color: rgba(50, 50, 50, 1);
+  padding: 0.3rem;
+  border-radius: 0.5rem;
+  z-index: 5;
+  box-shadow: 0 0 15px black;
 }
+
+
 
 .tab-list {
   width: 10rem;

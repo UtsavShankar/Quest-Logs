@@ -6,6 +6,8 @@ import tagColours from "../../data/tagData.js";
 import { formatDate } from "../../utils/dateUtils.js";
 import DatePicker from "../DatePicker.jsx";
 import "../Buttons.css";
+import {ReactComponent as MoreIcon} from '../../assets/more-horiz.svg';
+import QuestOptions from "./QuestOptions";
 
 export default function QuestDetailsPanel({ ref, quest, onUpdate, onDelete, tagProps }) {
     const { userTags } = tagProps;
@@ -50,6 +52,7 @@ export default function QuestDetailsPanel({ ref, quest, onUpdate, onDelete, tagP
         setIsEditingTag(false);
         setIsEditingDate(false);
         setIsEditingScheduledDate(false);
+        setDropdownIsShowing(false);
     }, [quest.id]);
 
     const updateTitle = (newTitle) => 
@@ -143,6 +146,7 @@ export default function QuestDetailsPanel({ ref, quest, onUpdate, onDelete, tagP
     }
 
     const titleRef = useRef(null);
+    const dropdownRef = useRef(null);
 
     const handleTitleKeyDown = (event) => {
         if (event.key === 'Enter') {
@@ -178,15 +182,36 @@ export default function QuestDetailsPanel({ ref, quest, onUpdate, onDelete, tagP
 
     const [dropdownIsShowing, setDropdownIsShowing] = useState(false);
 
+    useEffect(() => {
+        if (!dropdownIsShowing) return;
+        
+        const clickHandler = (event) => {
+            if (!dropdownRef.current?.contains(event.target)) {
+                event.stopImmediatePropagation();
+                setDropdownIsShowing(false);
+            }
+        }
+
+        const timeout = setTimeout(() => {
+            document.addEventListener("click", clickHandler);
+        }, 500)
+
+        return () => {
+            clearTimeout(timeout);
+            document.removeEventListener("click", clickHandler);
+        }
+    }, [dropdownIsShowing])
+
     return(
         <div ref={ref} className="quest-details-panel">
-            <div className="simple-button" onClick={() => setDropdownIsShowing(!dropdownIsShowing)} 
-                style={{ marginLeft: "auto", position: "relative", cursor:"pointer" }}>
-                ...
+            <div 
+                className="icon-wrapper" 
+                onClick={() => setDropdownIsShowing(!dropdownIsShowing)}
+                style={{ marginLeft: "auto", position: "relative", cursor:"pointer" }}
+            >
+                <MoreIcon className="icon-button"/>
                 {
-                    dropdownIsShowing && <button 
-                        className="delete-button"
-                        onClick={() => onDelete(quest.id)}>Delete</button>
+                    dropdownIsShowing && <QuestOptions ref={dropdownRef} onDelete={() => onDelete(quest.id)}/>
                 }
             </div>
             <span
