@@ -602,6 +602,7 @@ input.tag-search-input {
   border-radius: 0.5rem;
   z-index: 5;
   box-shadow: 0 0 15px black;
+  width: 10rem;
 }
 
 

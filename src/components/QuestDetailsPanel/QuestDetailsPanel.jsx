@@ -7,9 +7,10 @@ import { formatDate } from "../../utils/dateUtils.js";
 import DatePicker from "../DatePicker.jsx";
 import "../Buttons.css";
 import {ReactComponent as MoreIcon} from '../../assets/more-horiz.svg';
-import QuestOptions from "./QuestOptions";
+import QuestOptions from "./QuestOptions.jsx";
+import MoveMenu from "./MoveMenu.jsx";
 
-export default function QuestDetailsPanel({ ref, quest, onUpdate, onDelete, tagProps }) {
+export default function QuestDetailsPanel({ ref, quest, onUpdate, moveQuestToList, onDelete, tagProps, userLists }) {
     const { userTags } = tagProps;
 
     const [title, setTitle] = useState(quest.title);
@@ -52,7 +53,7 @@ export default function QuestDetailsPanel({ ref, quest, onUpdate, onDelete, tagP
         setIsEditingTag(false);
         setIsEditingDate(false);
         setIsEditingScheduledDate(false);
-        setDropdownIsShowing(false);
+        setOptionsAreShowing(false);
     }, [quest.id]);
 
     const updateTitle = (newTitle) => 
@@ -180,15 +181,16 @@ export default function QuestDetailsPanel({ ref, quest, onUpdate, onDelete, tagP
     }
     }, [isEditingTitle]);
 
-    const [dropdownIsShowing, setDropdownIsShowing] = useState(false);
+    const [optionsAreShowing, setOptionsAreShowing] = useState(false);
+    const [isMovingQuest, setIsMovingQuest] = useState(false);
 
     useEffect(() => {
-        if (!dropdownIsShowing) return;
+        if (!optionsAreShowing) return;
         
         const clickHandler = (event) => {
             if (!dropdownRef.current?.contains(event.target)) {
                 event.stopImmediatePropagation();
-                setDropdownIsShowing(false);
+                setOptionsAreShowing(false);
             }
         }
 
@@ -200,18 +202,38 @@ export default function QuestDetailsPanel({ ref, quest, onUpdate, onDelete, tagP
             clearTimeout(timeout);
             document.removeEventListener("click", clickHandler);
         }
-    }, [dropdownIsShowing])
+    }, [optionsAreShowing])
 
     return(
         <div ref={ref} className="quest-details-panel">
             <div 
                 className="icon-wrapper" 
-                onClick={() => setDropdownIsShowing(!dropdownIsShowing)}
+                onClick={() => {
+                    if (optionsAreShowing) setOptionsAreShowing(false);
+                    else if (isMovingQuest) setIsMovingQuest(false);
+                    else setOptionsAreShowing(true);
+                }}
                 style={{ marginLeft: "auto", position: "relative", cursor:"pointer" }}
             >
                 <MoreIcon className="icon-button"/>
                 {
-                    dropdownIsShowing && <QuestOptions ref={dropdownRef} onDelete={() => onDelete(quest.id)}/>
+                    optionsAreShowing && 
+                    <QuestOptions 
+                        ref={dropdownRef} 
+                        onMove={(e) => {
+                            e.stopPropagation();
+                            setOptionsAreShowing(false); 
+                            setIsMovingQuest(true);
+                        }}
+                        onDelete={() => onDelete(quest.id)}
+                    />
+                }
+                {
+                    isMovingQuest &&
+                    <MoveMenu
+                        lists={userLists}
+                        moveToList={(listId) => moveQuestToList(quest.id, listId)}
+                    />
                 }
             </div>
             <span

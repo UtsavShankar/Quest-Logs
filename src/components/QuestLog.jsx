@@ -321,6 +321,8 @@ export default function TodoList({ user, settings, setSettings }) {
                 tagProps={{ userTags, addTag, deleteTag, updateTag }}
                 onUpdate={updateTodo} 
                 onDelete={deleteTodo}
+                userLists={userLists}
+                moveQuestToList={moveTodoToList}
               />
             }
           </div>
